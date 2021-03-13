@@ -1,0 +1,11 @@
+Package: survival.svb
+Type: Package
+Title:
+Version: 1.0
+Date: 2021-03-13
+Author: Michael Komodromos
+Maintainer: Michael Komodromos <mk1019@ic.ac.uk>
+Description: 
+License: 
+Imports: Rcpp (>= 1.0.6)
+LinkingTo: Rcpp, RcppArmadillo
