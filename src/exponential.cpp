@@ -1,5 +1,5 @@
-#include "RcppArmadillo.h"
-#include "utils.hpp"
+#include "exponential.hpp"
+
 
 class ExponentialMean {
     private:
@@ -12,6 +12,12 @@ class ExponentialMean {
 
 
     public:
+	ExponentialMean(const arma::colvec &P_, const arma::colvec &x_j_, 
+		const arma::colvec &T_, double omega_, double sigma_, 
+		double lambda_) :
+	    P(P_), x_j(x_j_), T(T_), omega(omega_), sigma(sigma_), 
+	    lambda(lambda_) {};
+
 	double Evaluate(const double mu) {
 	    return sum(omega * T % normal_mgf(x_j, mu, sigma) % P - mu * x_j) +
 		lambda * sigma * sqrt(2.0/PI) * exp(-pow(mu/sigma, 2)) +
@@ -38,6 +44,11 @@ class ExponentialVariance {
 
 
     public:
+	ExponentialVariance(const arma::colvec &P_, const arma::colvec &x_j_, 
+		const arma::colvec &T_, double omega_, double mu_, 
+		double lambda_) :
+	    P(P_), x_j(x_j_), T(T_), omega(omega_), mu(mu_), lambda(lambda_) {};
+
 	double Evaluate(const double sigma) {
 	    return sum(omega * T % normal_mgf(x_j, mu, sigma) % P - mu * x_j) +
 		lambda * sigma * sqrt(2.0/PI) * exp(-pow(mu/sigma, 2)) +
@@ -57,7 +68,8 @@ class ExponentialVariance {
 
 double
 ExponentialWeights(double mu, double sigma, double lambda, double omega,
-	double a_0, double b_0, arma::vec P, arma::vec T, arma::vec x_j) 
+	double a_0, double b_0, const arma::vec &P, const arma::vec &T, 
+	const arma::vec &x_j) 
 {
     return sigmoid(log(a_0 / b_0) + 1.0/2.0 -
 	    (lambda * sigma * sqrt(2.0 / PI) * exp(-pow(mu/ sigma, 2 )) +
