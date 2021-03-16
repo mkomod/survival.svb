@@ -1,9 +1,9 @@
 #include "RcppArmadillo.h"
-#include "RcppEnsmallen.h"
-// [[Rcpp::depends(RcppEnsmallen)]]
-// [[Rcpp::depends(RcppArmadillo)]]
 
 #include "utils.hpp"
+#include "exponential.hpp"
+#include "optimiser.hpp"
+
 
 // [[Rcpp::export]]
 arma::vec
@@ -36,32 +36,58 @@ add_P(arma::vec P, arma::vec x_j, double m, double s, double g)
 }
 
 
+
+// [[Rcpp::export]]
 Rcpp::List 
-fit(arma::colvec T, arma::mat X, double omega)
+fit(arma::colvec T, arma::mat X, double omega, double lambda, double a_0, 
+	double b_0, arma::vec m, arma::vec s, arma::vec g, int maxiter,
+	bool verbose)
 {
-    // init m, s, g
     int p = X.n_cols;
     int n = X.n_rows;
-    arma::vec m, s, g = arma::vec(p, arma::fill::zeros);
+    arma::vec m_old = arma::vec(p, arma::fill::randu);
+    arma::vec s_old = arma::vec(p, arma::fill::randu);
+    arma::vec g_old = arma::vec(p, arma::fill::randu);
     
-    // P.i := x_j.t * m + 1/2 x_j * S * x_j.t()
-    // arma::vec P = initialise_P(m, s, X);
+    // P.i := see Eq(18)
+    arma::vec P = init_P(X, m, s, g);
+    
+    for (int iter = 0; iter < maxiter; ++iter) {
 
-    for (int j = 0; j < X.n_cols; ++j) {
-    // opt m
-	// P = sub_from_P(P, m(j), s(j), X.col(j));
-	// m(j) = update_m();
-	// P = add_to_P(P, m(j), s(j), X.col(j));
+	m_old = m;  s_old = s;  g_old = g;
 
-	// opt s
-	// P = sub_from_P(P, m(j), s(j), X.col(j));
-	// s(j) = update_s();
-	// P = add_to_P(P, m(j), s(j), X.col(j));
+	for (int j = 0; j < p; ++j) {
+	    arma::colvec x_j = X.col(j);
+	    double mu = m(j);
+	    double sig = s(j);
+	    double gam = g(j);
 
-	// opt g
-	// g(j) = update_g();
+	    // optimise mu
+	    P = rm_P(P, x_j, mu, sig, gam);
+	    m(j) = optimise_mu_exp(sig, omega, lambda, P, T, x_j, 
+		    verbose);
+	    P = add_P(P, x_j, m(j), sig, gam);
+	    
+	    // optimise sigma
+	    P = rm_P(P, x_j, m(j), sig, gam);
+	    s(j) = optimise_sigma_exp(m(j), omega, lambda, P, T, x_j, 
+		    verbose);
+	    P = add_P(P, x_j, m(j), s(j), gam);
 
+	    // optimise gamma
+	    P = rm_P(P, x_j, m(j), s(j), gam);
+	    g(j) = optimise_gamma_exp(m(j), s(j), lambda, omega, a_0, b_0, 
+		    P, T, x_j, verbose);
+	    P = add_P(P, x_j, m(j), s(j), g(j));
+	}
+
+	if (sum(abs(m_old - m)) < 1e-6 && sum(abs(s_old - s)) < 1e-6) {
+	    if (verbose)
+		Rcpp::Rcout << "Converged in: " << iter << " iterations\n";
+	    break;
+	}
     }
+    
 
     return Rcpp::List::create(
 	    Rcpp::Named("mu") = m,
@@ -69,3 +95,21 @@ fit(arma::colvec T, arma::mat X, double omega)
 	    Rcpp::Named("gamma") = g
     );
 }
+
+
+// [[Rcpp::export]]
+double 
+objective_fn_exp(double mu, double sigma, double omega, double lambda, 
+    const arma::vec &P, const arma::vec &T, const arma::vec x_j, bool verbose) 
+{
+    double res = sum(omega * T % normal_mgf(x_j, mu, sigma) % P - mu * x_j) +
+	lambda * sigma * sqrt(2.0/PI) * exp(-pow(mu/sigma, 2)) +
+	lambda * mu * (1.0 - 2.0 * R::pnorm(- mu / sigma, 0, 1, 1, 0)) -
+	log(sigma);
+
+    if (verbose)
+	Rcpp::Rcout << "f: " << res << "\n";
+
+    return res;
+}
+
