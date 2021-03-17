@@ -1,8 +1,8 @@
 #include "RcppArmadillo.h"
 
-#include "utils.hpp"
 #include "exponential.hpp"
 #include "optimiser.hpp"
+#include "utils.hpp"
 
 
 // [[Rcpp::export]]
