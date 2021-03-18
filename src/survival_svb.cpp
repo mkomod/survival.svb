@@ -40,12 +40,13 @@ add_P(arma::vec P, arma::vec x_j, double m, double s, double g)
 
 // [[Rcpp::export]]
 Rcpp::List 
-fit(arma::colvec T, arma::mat X, double omega, double lambda, double a_0, 
-	double b_0, arma::vec m, arma::vec s, arma::vec g, int maxiter,
-	bool verbose)
+fit(arma::vec T, arma::vec delta, arma::mat X, double omega, double lambda,
+	double a_0,  double b_0, arma::vec m, arma::vec s, arma::vec g, 
+	int maxiter, bool verbose)
 {
     int p = X.n_cols;
     int n = X.n_rows;
+    int n_delta = sum(delta);
     arma::vec m_old = arma::vec(p, arma::fill::randu);
     arma::vec s_old = arma::vec(p, arma::fill::randu);
     arma::vec g_old = arma::vec(p, arma::fill::randu);
@@ -67,12 +68,12 @@ fit(arma::colvec T, arma::mat X, double omega, double lambda, double a_0,
 	    P = rm_P(P, x_j, mu, sig, gam);
 
 	    // optimise mu_j, sigma_j, gam_j
-	    m(j) = optimise_mu_exp(sig, omega, lambda, P, T, x_j, 
-		    verbose);
-	    s(j) = optimise_sigma_exp(m(j), omega, lambda, P, T, x_j, 
-		    verbose);
+	    m(j) = optimise_mu_exp(sig, omega, lambda, P, T, delta,
+		    x_j, verbose);
+	    s(j) = optimise_sigma_exp(m(j), omega, lambda, P, T, delta,
+		    x_j, verbose);
 	    g(j) = optimise_gamma_exp(m(j), s(j), lambda, omega, a_0, b_0, 
-		    P, T, x_j, verbose);
+		    P, T, delta, x_j, verbose);
 
 	    // add in g_j M(x_j, m_j, s_j) - (1 - g_j) from P_i
 	    P = add_P(P, x_j, m(j), s(j), g(j));
