@@ -21,6 +21,7 @@ init_P(arma::mat X, arma::vec m, arma::vec s, arma::vec g)
     return exp(P);
 }
 
+
 // [[Rcpp::export]]
 arma::vec
 rm_P(arma::vec P, arma::vec x_j, double m, double s, double g)
@@ -28,13 +29,13 @@ rm_P(arma::vec P, arma::vec x_j, double m, double s, double g)
     return P /= g * normal_mgf(x_j, m, s) + (1 - g);
 }
 
+
 // [[Rcpp::export]]
 arma::vec
 add_P(arma::vec P, arma::vec x_j, double m, double s, double g)
 {
     return P %= g * normal_mgf(x_j, m, s) + (1 - g);
 }
-
 
 
 // [[Rcpp::export]]
@@ -61,23 +62,19 @@ fit(arma::colvec T, arma::mat X, double omega, double lambda, double a_0,
 	    double mu = m(j);
 	    double sig = s(j);
 	    double gam = g(j);
-
-	    // optimise mu
+	    
+	    // remove g_j M(x_j, m_j, s_j) - (1 - g_j) from P_i
 	    P = rm_P(P, x_j, mu, sig, gam);
+
+	    // optimise mu_j, sigma_j, gam_j
 	    m(j) = optimise_mu_exp(sig, omega, lambda, P, T, x_j, 
 		    verbose);
-	    P = add_P(P, x_j, m(j), sig, gam);
-	    
-	    // optimise sigma
-	    P = rm_P(P, x_j, m(j), sig, gam);
 	    s(j) = optimise_sigma_exp(m(j), omega, lambda, P, T, x_j, 
 		    verbose);
-	    P = add_P(P, x_j, m(j), s(j), gam);
-
-	    // optimise gamma
-	    P = rm_P(P, x_j, m(j), s(j), gam);
 	    g(j) = optimise_gamma_exp(m(j), s(j), lambda, omega, a_0, b_0, 
 		    P, T, x_j, verbose);
+
+	    // add in g_j M(x_j, m_j, s_j) - (1 - g_j) from P_i
 	    P = add_P(P, x_j, m(j), s(j), g(j));
 	}
 
@@ -102,7 +99,7 @@ double
 objective_fn_exp(double mu, double sigma, double omega, double lambda, 
     const arma::vec &P, const arma::vec &T, const arma::vec x_j, bool verbose) 
 {
-    double res = sum(omega * T % normal_mgf(x_j, mu, sigma) % P - mu * x_j) +
+    double res = sum(omega * T % normal_mgf(x_j, mu, sigma) % P - mu*x_j) +
 	lambda * sigma * sqrt(2.0/PI) * exp(-pow(mu/sigma, 2)) +
 	lambda * mu * (1.0 - 2.0 * R::pnorm(- mu / sigma, 0, 1, 1, 0)) -
 	log(sigma);
