@@ -40,9 +40,9 @@ add_P(arma::vec P, arma::vec x_j, double m, double s, double g)
 
 // [[Rcpp::export]]
 Rcpp::List 
-fit(arma::vec T, arma::vec delta, arma::mat X, double omega, double lambda,
-	double a_0,  double b_0, arma::vec m, arma::vec s, arma::vec g, 
-	int maxiter, bool verbose)
+fit(arma::vec T, arma::vec delta, arma::mat X, double lambda,
+	double a_0,  double b_0, double a_omega, double b_omega, 
+	arma::vec m, arma::vec s, arma::vec g, int maxiter, bool verbose)
 {
     int p = X.n_cols;
     int n = X.n_rows;
@@ -50,6 +50,8 @@ fit(arma::vec T, arma::vec delta, arma::mat X, double omega, double lambda,
     arma::vec m_old = arma::vec(p, arma::fill::randu);
     arma::vec s_old = arma::vec(p, arma::fill::randu);
     arma::vec g_old = arma::vec(p, arma::fill::randu);
+    double m_omega = a_omega / b_omega;
+    double s_omega = 0.5;
     
     // P.i := see Eq(18)
     arma::vec P = init_P(X, m, s, g);
@@ -58,8 +60,10 @@ fit(arma::vec T, arma::vec delta, arma::mat X, double omega, double lambda,
 
 	m_old = m;  s_old = s;  g_old = g;
 
+
 	for (int j = 0; j < p; ++j) {
 	    arma::colvec x_j = X.col(j);
+	    double omega = m_omega;
 	    double mu = m(j);
 	    double sig = s(j);
 	    double gam = g(j);
@@ -78,6 +82,13 @@ fit(arma::vec T, arma::vec delta, arma::mat X, double omega, double lambda,
 	    // add in g_j M(x_j, m_j, s_j) - (1 - g_j) from P_i
 	    P = add_P(P, x_j, m(j), s(j), g(j));
 	}
+
+	// optimise exp terms
+	m_omega = optimise_mu_omega_exp(s_omega, a_omega, b_omega,
+		n_delta, P, T);
+	s_omega = optimise_sigma_omega_exp(m_omega, a_omega, n_delta);
+	Rcpp::Rcout << m_omega << "\n";
+	Rcpp::Rcout << s_omega << "\n";
 
 	if (sum(abs(m_old - m)) < 1e-6 && sum(abs(s_old - s)) < 1e-6) {
 	    if (verbose)

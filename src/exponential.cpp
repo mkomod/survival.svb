@@ -12,6 +12,12 @@ struct kwargs {
     bool verbose;
 };
 
+struct sig_kwargs {
+    const double &mu_omega;
+    const double &a_omega;
+    const int &n_delta;
+};
+
 
 double 
 objective_mu_exp(double mu, void* args)
@@ -64,6 +70,20 @@ objective_sigma_exp(double sigma, void* args)
     return res;
 }
 
+double
+objective_exp_sigma_omega(double sigma_omega, void* args)
+{
+    sig_kwargs *arg = static_cast<sig_kwargs *>(args);
+    int n_delta = arg->n_delta;
+    double a_omega = arg->a_omega;
+    double mu_o = arg->mu_omega;
+
+    double res = -(n_delta + a_omega - 1.0) * exp(mu_o + 
+	    pow(sigma_omega, 2)/2.0) - log(sigma_omega);
+
+    return res;
+}
+
 
 // [[Rcpp::export]]
 double
@@ -105,3 +125,19 @@ optimise_sigma_exp(double mu, double omega, double lambda,
 	    static_cast<void*>(&args), 1e-5);
 }
 
+double
+optimise_mu_omega_exp(double sigma_omega, double a_omega, double b_omega,
+	int n_delta, const arma::vec &P, const arma::vec T)
+{
+    return log((sum(P % T) + b_omega)/(n_delta + a_omega - 1)) -
+	pow(sigma_omega, 2) / 2.0;
+}
+
+
+double 
+optimise_sigma_omega_exp(double mu_omega, double a_omega, int n_delta)
+{
+    sig_kwargs args = {mu_omega, a_omega, n_delta};
+    return Brent_fmin(0, 4, objective_exp_sigma_omega,
+	    static_cast<void *>(&args), 1e-5);
+}
