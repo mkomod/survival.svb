@@ -25,11 +25,11 @@ double optimise_sigma_exp(double mu, double omega, double lambda,
 	const arma::vec &P, const arma::vec &T, const arma::vec &delta,
 	const arma::vec x_j, bool verbose);
 
-double optimise_mu_omega_exp(double sigma_omega, double a_omega, 
-	double b_omega, int n_delta, const arma::vec &P, 
-	const arma::vec T);
+double optimise_a_exp(double b, double a_omega, double b_omega,
+    const arma::vec &P, const arma::vec &T, const int n_delta,
+    bool verbose);
 
-double optimise_sigma_omega_exp(double mu_omega, double a_omega, 
-	int n_delta);
+double optimise_b_exp(double a, double a_omega, double b_omega, 
+	const arma::vec P, const arma::vec T, int n_delta);
 
 #endif

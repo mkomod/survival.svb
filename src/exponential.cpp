@@ -12,10 +12,15 @@ struct kwargs {
     bool verbose;
 };
 
-struct sig_kwargs {
-    const double &mu_omega;
+struct exp_kwargs {
+    const double &a;
+    const double &b;
     const double &a_omega;
+    const double &b_omega;
+    const arma::vec &P;
+    const arma::vec &T; 
     const int &n_delta;
+    bool verbose;
 };
 
 
@@ -71,18 +76,50 @@ objective_sigma_exp(double sigma, void* args)
 }
 
 double
-objective_exp_sigma_omega(double sigma_omega, void* args)
+objective_exp_a(double a, void* args)
 {
-    sig_kwargs *arg = static_cast<sig_kwargs *>(args);
-    int n_delta = arg->n_delta;
+    exp_kwargs *arg = static_cast<exp_kwargs *>(args);
+    double b = arg->b;
     double a_omega = arg->a_omega;
-    double mu_o = arg->mu_omega;
+    double b_omega = arg->b_omega;
+    const arma::vec &P = arg->P;
+    const arma::vec &T = arg->T;
+    const int n_delta = arg->n_delta;
+    bool verbose = arg->verbose;
 
-    double res = -(n_delta + a_omega - 1.0) * exp(mu_o + 
-	    pow(sigma_omega, 2)/2.0) - log(sigma_omega);
+    double res = (sum(P % T) + b_omega) * (a / b) - a + 
+	(a + a_omega - n_delta) * R::digamma(a) +
+	// (n_delta - a_omega) * log(b) -
+	log(R::gammafn(a));
+    
+    if (verbose)
+	Rcpp::Rcout << "a: " << res << "\n";
 
     return res;
-}
+};
+
+
+// double
+// objective_exp_b(double b, void* args)
+// {
+//     exp_kwargs *arg = static_cast<exp_kwargs *>(args);
+//     double a = arg->a;
+//     double a_omega = arg->a_omega;
+//     double b_omega = arg->b_omega;
+//     const arma::vec &P = arg->P;
+//     const arma::vec &T = arg->T;
+//     const int n_delta = arg->n_delta;
+//     bool verbose = arg->verbose;
+
+//     double res = (sum(P % T) + b_omega) * (a / b) +
+// 	(n_delta - a_omega) * log(b);
+    
+//     if (verbose)
+// 	Rcpp::Rcout << "b: " << res << "\n";
+
+//     return res;
+// };
+
 
 
 // [[Rcpp::export]]
@@ -125,19 +162,21 @@ optimise_sigma_exp(double mu, double omega, double lambda,
 	    static_cast<void*>(&args), 1e-5);
 }
 
-double
-optimise_mu_omega_exp(double sigma_omega, double a_omega, double b_omega,
-	int n_delta, const arma::vec &P, const arma::vec T)
-{
-    return log((sum(P % T) + b_omega)/(n_delta + a_omega - 1)) -
-	pow(sigma_omega, 2) / 2.0;
-}
-
 
 double 
-optimise_sigma_omega_exp(double mu_omega, double a_omega, int n_delta)
+optimise_a_exp(double b, double a_omega, double b_omega,
+    const arma::vec &P, const arma::vec &T, const int n_delta,
+    bool verbose)
 {
-    sig_kwargs args = {mu_omega, a_omega, n_delta};
-    return Brent_fmin(0, 4, objective_exp_sigma_omega,
-	    static_cast<void *>(&args), 1e-5);
+    exp_kwargs args = {0.0, b, a_omega, b_omega, P, T, n_delta, verbose};
+    return Brent_fmin(0, 1e2, objective_exp_a, static_cast<void *>(&args),
+	    1e-5);
 }
+
+double 
+optimise_b_exp(double a, double a_omega, double b_omega, 
+	const arma::vec P, const arma::vec T, int n_delta)
+{
+    return (b_omega + sum(P % T)) * a / (n_delta + a_omega);
+}
+

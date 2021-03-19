@@ -50,8 +50,7 @@ fit(arma::vec T, arma::vec delta, arma::mat X, double lambda,
     arma::vec m_old = arma::vec(p, arma::fill::randu);
     arma::vec s_old = arma::vec(p, arma::fill::randu);
     arma::vec g_old = arma::vec(p, arma::fill::randu);
-    double m_omega = a_omega / b_omega;
-    double s_omega = 0.5;
+    double a = a_omega; double b = b_omega;
     
     // P.i := see Eq(18)
     arma::vec P = init_P(X, m, s, g);
@@ -59,11 +58,14 @@ fit(arma::vec T, arma::vec delta, arma::mat X, double lambda,
     for (int iter = 0; iter < maxiter; ++iter) {
 
 	m_old = m;  s_old = s;  g_old = g;
-
+	// optimise exp terms
+	a = optimise_a_exp(b, a_omega, b_omega, P, T, n_delta, verbose);
+	b = optimise_b_exp(a, a_omega, b_omega, P, T, n_delta);
+	Rcpp::Rcout << b << "\n";
 
 	for (int j = 0; j < p; ++j) {
 	    arma::colvec x_j = X.col(j);
-	    double omega = m_omega;
+	    double omega = a / b;
 	    double mu = m(j);
 	    double sig = s(j);
 	    double gam = g(j);
@@ -83,12 +85,6 @@ fit(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 	    P = add_P(P, x_j, m(j), s(j), g(j));
 	}
 
-	// optimise exp terms
-	m_omega = optimise_mu_omega_exp(s_omega, a_omega, b_omega,
-		n_delta, P, T);
-	s_omega = optimise_sigma_omega_exp(m_omega, a_omega, n_delta);
-	Rcpp::Rcout << m_omega << "\n";
-	Rcpp::Rcout << s_omega << "\n";
 
 	if (sum(abs(m_old - m)) < 1e-6 && sum(abs(s_old - s)) < 1e-6) {
 	    if (verbose)
@@ -101,7 +97,9 @@ fit(arma::vec T, arma::vec delta, arma::mat X, double lambda,
     return Rcpp::List::create(
 	    Rcpp::Named("mu") = m,
 	    Rcpp::Named("sigma") = s,
-	    Rcpp::Named("gamma") = g
+	    Rcpp::Named("gamma") = g,
+	    Rcpp::Named("a") = a,
+	    Rcpp::Named("b") = b
     );
 }
 
