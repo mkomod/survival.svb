@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include "RcppArmadillo.h"
 
 #include "exponential.hpp"
@@ -50,6 +52,7 @@ fit(arma::vec T, arma::vec delta, arma::mat X, double lambda,
     arma::vec m_old = arma::vec(p, arma::fill::randu);
     arma::vec s_old = arma::vec(p, arma::fill::randu);
     arma::vec g_old = arma::vec(p, arma::fill::randu);
+    double a_old, b_old;
     double a = a_omega; double b = b_omega;
     
     // P.i := see Eq(18)
@@ -59,6 +62,8 @@ fit(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 
 	m_old = m;  s_old = s;  g_old = g;
 	// optimise exp terms
+	a_old = a;
+	b_old = b;
 	a = optimise_a_exp(b, a_omega, b_omega, P, T, n_delta, verbose);
 	b = optimise_b_exp(a, a_omega, b_omega, P, T, n_delta);
 	Rcpp::Rcout << b << "\n";
@@ -86,7 +91,8 @@ fit(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 	}
 
 
-	if (sum(abs(m_old - m)) < 1e-6 && sum(abs(s_old - s)) < 1e-6) {
+	if (sum(abs(m_old - m)) < 1e-6 && sum(abs(s_old - s)) < 1e-6 &&
+	    std::abs(a_old - a) < 1e-6 && std::abs(b_old - b) < 1e-6) {
 	    if (verbose)
 		Rcpp::Rcout << "Converged in: " << iter << " iterations\n";
 	    break;
