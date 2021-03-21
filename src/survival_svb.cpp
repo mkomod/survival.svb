@@ -110,3 +110,70 @@ fit(arma::vec T, arma::vec delta, arma::mat X, double lambda,
     );
 }
 
+
+// [[Rcpp::export]]
+double 
+objective_mu_sig(double mu, double sigma, arma::vec T, arma::uvec F, 
+	arma::vec x_j, arma::vec Xmg, double lambda)
+{
+    double t = 0.0;
+    for (auto i : F) {
+	// indices of times 
+	arma::uvec risk_set = find(T > T(i));
+	double m = max(Xmg(risk_set) + mu * x_j(risk_set));
+	t += m - mu * x_j(i);
+    }
+
+    double res = t +
+	lambda * sigma * sqrt(2.0/PI) * exp(-pow(mu/sigma, 2)) +
+	lambda * mu * (1.0 - 2.0 * R::pnorm(- mu / sigma, 0, 1, 1, 0)) -
+	log(sigma);
+
+    return res;
+
+}
+
+
+// [[Rcpp::export]]
+double 
+objective_gamma(double gamma, double mu, double sigma, double a_0, 
+	double b_0, double lambda, const arma::vec &T, 
+	const arma::uvec &F, const arma::vec &x_j, const arma::vec &Xmg)
+{
+    double t = 0.0;
+    for (auto i : F) {
+	// indices of times 
+	arma::uvec risk_set = find(T > T(i));
+	double m = max(Xmg(risk_set) + gamma * mu * x_j(risk_set));
+	t += m - gamma * mu * x_j(i);
+    }
+
+    double res = t + gamma * 
+	(log(sqrt(2.0 / PI) * 1.0 /(sigma * lambda)) - 
+	1.0/2.0 +
+	lambda * sigma * sqrt(2.0 / PI) * exp(-pow(mu/sigma, 2 )) +
+	lambda * mu * (1.0 - 2.0 * R::pnorm(- mu/sigma, 0, 1, 1, 0)) +
+	log(gamma / (1.0 - gamma)) - log(a_0 / b_0)) + 
+	log(1.0 - gamma);
+
+    return res;
+}
+
+
+
+// [[Rcpp::export]]
+Rcpp::List
+fit_partial(arma::vec T, arma::vec delta, arma::mat X, double lambda, 
+	int maxiter, bool verbose)
+{
+    // indices of failed times from smallest to largest
+    arma::uvec R = sort_index(T); 
+    arma::uvec F = R(find(delta(R)));
+
+    // init vars
+    // arma::vec Xmg = X * (m % g);
+
+    return Rcpp::List::create(
+	Rcpp::Named("T_order") = F
+    );
+}
