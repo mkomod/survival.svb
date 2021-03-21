@@ -66,7 +66,8 @@ fit(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 	b_old = b;
 	a = optimise_a_exp(b, a_omega, b_omega, P, T, n_delta, verbose);
 	b = optimise_b_exp(a, a_omega, b_omega, P, T, n_delta);
-	Rcpp::Rcout << b << "\n";
+	// Rcpp::Rcout << "a: " << a << "\n";
+	// Rcpp::Rcout << "b: " << b << "\n";
 
 	for (int j = 0; j < p; ++j) {
 	    arma::colvec x_j = X.col(j);
@@ -107,22 +108,5 @@ fit(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 	    Rcpp::Named("a") = a,
 	    Rcpp::Named("b") = b
     );
-}
-
-
-// [[Rcpp::export]]
-double 
-objective_fn_exp(double mu, double sigma, double omega, double lambda, 
-    const arma::vec &P, const arma::vec &T, const arma::vec x_j, bool verbose) 
-{
-    double res = sum(omega * T % normal_mgf(x_j, mu, sigma) % P - mu*x_j) +
-	lambda * sigma * sqrt(2.0/PI) * exp(-pow(mu/sigma, 2)) +
-	lambda * mu * (1.0 - 2.0 * R::pnorm(- mu / sigma, 0, 1, 1, 0)) -
-	log(sigma);
-
-    if (verbose)
-	Rcpp::Rcout << "f: " << res << "\n";
-
-    return res;
 }
 

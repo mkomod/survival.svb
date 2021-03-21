@@ -75,6 +75,7 @@ objective_sigma_exp(double sigma, void* args)
     return res;
 }
 
+
 double
 objective_exp_a(double a, void* args)
 {
@@ -90,36 +91,13 @@ objective_exp_a(double a, void* args)
     double res = (sum(P % T) + b_omega) * (a / b) - a + 
 	(a + a_omega - n_delta) * R::digamma(a) +
 	// (n_delta - a_omega) * log(b) -
-	log(R::gammafn(a));
+	R::lgammafn(a);
     
     if (verbose)
 	Rcpp::Rcout << "a: " << res << "\n";
 
     return res;
 };
-
-
-// double
-// objective_exp_b(double b, void* args)
-// {
-//     exp_kwargs *arg = static_cast<exp_kwargs *>(args);
-//     double a = arg->a;
-//     double a_omega = arg->a_omega;
-//     double b_omega = arg->b_omega;
-//     const arma::vec &P = arg->P;
-//     const arma::vec &T = arg->T;
-//     const int n_delta = arg->n_delta;
-//     bool verbose = arg->verbose;
-
-//     double res = (sum(P % T) + b_omega) * (a / b) +
-// 	(n_delta - a_omega) * log(b);
-    
-//     if (verbose)
-// 	Rcpp::Rcout << "b: " << res << "\n";
-
-//     return res;
-// };
-
 
 
 // [[Rcpp::export]]
@@ -169,9 +147,10 @@ optimise_a_exp(double b, double a_omega, double b_omega,
     bool verbose)
 {
     exp_kwargs args = {0.0, b, a_omega, b_omega, P, T, n_delta, verbose};
-    return Brent_fmin(0, 1e2, objective_exp_a, static_cast<void *>(&args),
+    return Brent_fmin(0, 1e100, objective_exp_a, static_cast<void *>(&args),
 	    1e-5);
 }
+
 
 double 
 optimise_b_exp(double a, double a_omega, double b_omega, 
