@@ -120,9 +120,14 @@ objective_mu_sig(double mu, double sigma, arma::vec T, arma::uvec F,
     for (auto i : F) {
 	// indices of times 
 	arma::uvec risk_set = find(T > T(i));
+	if (risk_set.size() == 0)
+	    break;
+
 	double m = max(Xmg(risk_set) + mu * x_j(risk_set));
 	t += m - mu * x_j(i);
     }
+
+    // Rcpp::Rcout << "t: " << t << "\n";
 
     double res = t +
 	lambda * sigma * sqrt(2.0/PI) * exp(-pow(mu/sigma, 2)) +
@@ -130,7 +135,6 @@ objective_mu_sig(double mu, double sigma, arma::vec T, arma::uvec F,
 	log(sigma);
 
     return res;
-
 }
 
 
@@ -144,6 +148,9 @@ objective_gamma(double gamma, double mu, double sigma, double a_0,
     for (auto i : F) {
 	// indices of times 
 	arma::uvec risk_set = find(T > T(i));
+	if (risk_set.size() == 0)
+	    break;
+
 	double m = max(Xmg(risk_set) + gamma * mu * x_j(risk_set));
 	t += m - gamma * mu * x_j(i);
     }
