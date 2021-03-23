@@ -150,8 +150,8 @@ opt_exp_a(double b, double a_omega, double b_omega,
 
 
 double 
-opt_exp_b(double a, double a_omega, double b_omega, 
-	const arma::vec &P, const arma::vec &T, int n_delta, bool verbose)
+opt_exp_b(double a, double a_omega, double b_omega, const arma::vec &P, 
+	const arma::vec &T, int n_delta, bool verbose)
 {
     return (b_omega + sum(P % T)) * a / (n_delta + a_omega);
 }
