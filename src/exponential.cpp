@@ -24,8 +24,8 @@ struct exp_kwargs {
 };
 
 
-double 
-objective_mu_exp(double mu, void* args)
+static double 
+f_exp_mu(double mu, void* args)
 {
     kwargs *arg = static_cast<kwargs *>(args);
     double sigma = arg->sigma;
@@ -50,8 +50,8 @@ objective_mu_exp(double mu, void* args)
 }
 
 
-double 
-objective_sigma_exp(double sigma, void* args)
+static double 
+f_exp_sig(double sigma, void* args)
 {
     kwargs *arg = static_cast<kwargs *>(args);
     double mu = arg->mu;
@@ -76,8 +76,8 @@ objective_sigma_exp(double sigma, void* args)
 }
 
 
-double
-objective_exp_a(double a, void* args)
+static double
+f_exp_a(double a, void* args)
 {
     exp_kwargs *arg = static_cast<exp_kwargs *>(args);
     double b = arg->b;
@@ -100,9 +100,8 @@ objective_exp_a(double a, void* args)
 };
 
 
-// [[Rcpp::export]]
 double
-optimise_gamma_exp(double mu, double sigma, double lambda, double omega,
+opt_exp_gam(double mu, double sigma, double omega, double lambda, 
 	double a_0, double b_0, const arma::vec &P, const arma::vec &T,
 	const arma::vec &delta, const arma::vec &x_j, bool verbose) 
 {
@@ -110,8 +109,9 @@ optimise_gamma_exp(double mu, double sigma, double lambda, double omega,
 	    (lambda * sigma * sqrt(2.0 / PI) * exp(-pow(mu/sigma, 2 )) +
 	     lambda * mu * (1.0 - 2.0 * R::pnorm(- mu/sigma, 0, 1, 1, 0)) +
 	     log(sqrt(2.0 / PI) * 1.0 /(sigma * lambda)) +
-	     sum(omega * T % P % (normal_mgf(x_j, mu, sigma) - 1) 
-		 - mu * delta % x_j)));
+	     sum(omega * T % P % (normal_mgf(x_j, mu, sigma) - 1) - 
+		 mu * delta % x_j)));
+
     if (verbose)
 	Rcpp::Rcout << "f: " << res << "\n";
 
@@ -120,41 +120,38 @@ optimise_gamma_exp(double mu, double sigma, double lambda, double omega,
 
 
 double
-optimise_mu_exp(double sigma, double omega, double lambda, 
+opt_exp_mu(double sigma, double omega, double lambda, 
     const arma::vec &P, const arma::vec &T, const arma::vec &delta,
     const arma::vec x_j, bool verbose)
 {
     kwargs args = {0.0, sigma, lambda, omega, P, T, delta, x_j, verbose};
-    return Brent_fmin(-1e2, 1e2, objective_mu_exp, 
-	    static_cast<void*>(&args), 1e-5);
+    return Brent_fmin(-1e2, 1e2, f_exp_mu, static_cast<void*>(&args), 1e-5);
 }
 
 
 double
-optimise_sigma_exp(double mu, double omega, double lambda, 
+opt_exp_sig(double mu, double omega, double lambda, 
     const arma::vec &P, const arma::vec &T, const arma::vec &delta,
     const arma::vec x_j, bool verbose)
 {
     kwargs args = {mu, 0.0, lambda, omega, P, T, delta, x_j, verbose};
-    return Brent_fmin(0, 4, objective_sigma_exp, 
-	    static_cast<void*>(&args), 1e-5);
+    return Brent_fmin(0, 4, f_exp_sig, static_cast<void*>(&args), 1e-5);
 }
 
 
 double 
-optimise_a_exp(double b, double a_omega, double b_omega,
+opt_exp_a(double b, double a_omega, double b_omega,
     const arma::vec &P, const arma::vec &T, const int n_delta,
     bool verbose)
 {
     exp_kwargs args = {0.0, b, a_omega, b_omega, P, T, n_delta, verbose};
-    return Brent_fmin(0, 1e100, objective_exp_a, static_cast<void *>(&args),
-	    1e-5);
+    return Brent_fmin(0, 1e100, f_exp_a, static_cast<void *>(&args), 1e-5);
 }
 
 
 double 
-optimise_b_exp(double a, double a_omega, double b_omega, 
-	const arma::vec P, const arma::vec T, int n_delta)
+opt_exp_b(double a, double a_omega, double b_omega, 
+	const arma::vec &P, const arma::vec &T, int n_delta, bool verbose)
 {
     return (b_omega + sum(P % T)) * a / (n_delta + a_omega);
 }
