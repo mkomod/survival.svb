@@ -32,6 +32,7 @@ R_exp_obj <- function(mu, sig, omega, lambda, P, Y, x_j) {
     log(sig)
 }
 
+sigmoid <- function(x) 1/(1 + exp(-x))
 R_opt_exp_gamma <- function(mu, sig, omega, lambda, a_0, b_0, P, Y, x_j) {
     sigmoid(
 	log(a_0/b_0) + 1/2 - (
@@ -41,9 +42,6 @@ R_opt_exp_gamma <- function(mu, sig, omega, lambda, a_0, b_0, P, Y, x_j) {
 	sum(omega*Y*P*(exp(x_j*mu + 1/2*sig^2*x_j^2) - 1) - mu*x_j) 
     ))
 }
-
-sigmoid <- function(x) 1/(1 + exp(-x))
-mse <- function(x) mean(x^2)
 
 
 P <- init_P(X, m, s, g)
@@ -73,8 +71,53 @@ for (iter in 1:100) {
     }
 }
 
-mse(b - m)
-mse(coef(m.1) - b)
 
-# performance from CoxPH
-m.1 <- survival::coxph(survival::Surv(Y) ~ ., data = as.data.frame(X))
+Rcpp::sourceCpp("../src/survival_svb.cpp", verbose=T, rebuild=T)
+
+n <- 250
+censoring_lvl <- 0.4
+set.seed(1)
+b <- c(1, 1, rep(0, 50))
+p <- length(b)
+X <- matrix(rnorm(n * p), nrow=n)
+y <- runif(nrow(X))
+omega <- 1
+Y <- log(1 - y) / - (exp(X %*% b) * omega)
+delta  <- runif(n) > censoring_lvl   # 0: censored, 1: uncensored
+Y[!delta] <- Y[!delta] * runif(sum(!delta))
+
+# params
+m <- matrix(rnorm(p), ncol=1)
+s <- matrix(abs(rnorm(p)), ncol=1)
+g <- matrix(runif(p), ncol=1)
+
+res <- fit_partial(Y, delta, X, lambda, 1000, T)
+
+lambda <- 0.5
+P <- init_P(X, m, s, g)
+for (iter in 1:10) {
+    for (j in 1:p) {
+	x_j <- X[ , j]
+	# sum(P)
+	P <- rm_P(P, x_j, m[j], s[j], g[j])
+	# sum(P)
+	m[j] <- optimize(function(mu) 
+		objective_mu_sig(mu, s[j], lambda, Y, res$T, P, x_j),
+		c(-100, 100))$min
+	s[j] <- optimize(function(sig) 
+		objective_mu_sig(m[j], sig, lambda, Y, res$T, P, x_j),
+		c(0, 10))$min
+	g[j] <- opt_gamma(m[j], s[j], 0.001, 0.001, lambda, Y, res$T, P,
+			  x_j)
+	# g[j] <- optimise(function(gam)
+	# 	objective_gamma(gam, m[j], s[j], 0.001, 0.001, lambda,
+	# 	Y, res$T, P, x_j),
+	# 	c(0, 1))$min
+	P <- add_P(P, x_j, m[j], s[j], g[j])
+	# sum(P)
+    }
+}
+
+opt_gamma(m[j], s[j], 0.001, 0.001, lambda, Y, res$T, P, x_j)
+
+

@@ -17,7 +17,7 @@ init_P(arma::mat X, arma::vec m, arma::vec s, arma::vec g)
     for (int i = 0; i < n; ++i) {
 	for (int j = 0; j < p; ++j) {
 	    // Prod x = exp(log(Prod x)) = exp(Sum log x))
-	    P(i) += log(g(j) * normal_mgf(X(i, j), m(j), s(j)) + 1 - g(j));
+	    P(i) += log(g(j) * normal_mgf(X(i, j), m(j), s(j)) + 1.0-g(j));
 	}
     }
     return exp(P);
@@ -113,21 +113,19 @@ fit(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 
 // [[Rcpp::export]]
 double 
-objective_mu_sig(double mu, double sigma, arma::vec T, arma::uvec F, 
-	arma::vec x_j, arma::vec Xmg, double lambda)
+objective_mu_sig(double mu, double sigma, double lambda, 
+	const arma::vec &T, const arma::uvec &F, const arma::vec &P, 
+	const arma::vec &x_j)
 {
     double t = 0.0;
     for (auto i : F) {
-	// indices of times 
-	arma::uvec risk_set = find(T > T(i));
-	if (risk_set.size() == 0)
-	    break;
-
-	double m = max(Xmg(risk_set) + mu * x_j(risk_set));
+	arma::uvec risk_set = find(T >= T(i));
+	double m = log(sum(
+	    P(risk_set) % 
+	    normal_mgf(x_j(risk_set), mu, sigma)
+	));
 	t += m - mu * x_j(i);
     }
-
-    // Rcpp::Rcout << "t: " << t << "\n";
 
     double res = t +
 	lambda * sigma * sqrt(2.0/PI) * exp(-pow(mu/sigma, 2)) +
@@ -141,23 +139,21 @@ objective_mu_sig(double mu, double sigma, arma::vec T, arma::uvec F,
 // [[Rcpp::export]]
 double 
 objective_gamma(double gamma, double mu, double sigma, double a_0, 
-	double b_0, double lambda, const arma::vec &T, 
-	const arma::uvec &F, const arma::vec &x_j, const arma::vec &Xmg)
+	double b_0, double lambda, const arma::vec &T, const arma::vec &F,
+	const arma::uvec &P, const arma::vec &x_j)
 {
     double t = 0.0;
     for (auto i : F) {
-	// indices of times 
-	arma::uvec risk_set = find(T > T(i));
-	if (risk_set.size() == 0)
-	    break;
-
-	double m = max(Xmg(risk_set) + gamma * mu * x_j(risk_set));
+	arma::uvec risk_set = find(T >= T(i));
+	double m = log(sum(
+	    P(risk_set) % 
+	    (gamma * normal_mgf(x_j(risk_set), mu, sigma) + (1-gamma))
+	));
 	t += m - gamma * mu * x_j(i);
     }
 
-    double res = t + gamma * 
-	(log(sqrt(2.0 / PI) * 1.0 /(sigma * lambda)) - 
-	1.0/2.0 +
+    double res = t +
+	gamma * (log(sqrt(2.0 / PI) * 1.0 /(sigma * lambda)) - 1.0/2.0 +
 	lambda * sigma * sqrt(2.0 / PI) * exp(-pow(mu/sigma, 2 )) +
 	lambda * mu * (1.0 - 2.0 * R::pnorm(- mu/sigma, 0, 1, 1, 0)) +
 	log(gamma / (1.0 - gamma)) - log(a_0 / b_0)) + 
@@ -166,6 +162,75 @@ objective_gamma(double gamma, double mu, double sigma, double a_0,
     return res;
 }
 
+// [[Rcpp::export]]
+double 
+root_gamma(double gamma, double mu, double sigma, double a_0, 
+	double b_0, double lambda, const arma::vec &T, const arma::vec &F,
+	const arma::uvec &P, const arma::vec &x_j)
+{
+    double t = 0.0;
+    for (auto i : F) {
+	arma::uvec risk_set = find(T >= T(i));
+	double m = sum(
+	    P(risk_set) % (normal_mgf(x_j(risk_set), mu, sigma) - 1)
+	);
+	Rcpp::Rcout << m << "\n";
+	t += m / (gamma * m + sum(P(risk_set))) - mu * x_j(i);
+    }
+    Rcpp::Rcout << "t: " << t << "\n";
+
+    double res = t +
+	(log(sqrt(2.0 / PI) * 1.0 /(sigma * lambda)) - 1.0/2.0 +
+	lambda * sigma * sqrt(2.0 / PI) * exp(-pow(mu/sigma, 2 )) +
+	lambda * mu * (1.0 - 2.0 * R::pnorm(- mu/sigma, 0, 1, 1, 0)) +
+	- log(a_0 / b_0)) + 
+	log(gamma / (1.0 - gamma));
+
+    return res;
+}
+
+
+// [[Rcpp::export]]
+double 
+opt_gamma(double mu, double sigma, double a_0, 
+	double b_0, double lambda, const arma::vec &T, const arma::uvec &F,
+	const arma::vec &P, const arma::vec &x_j)
+
+{
+    double t = 0.0; 
+    for (auto i : F) {
+	arma::uvec risk_set = find(T >= T(i));
+	double m = sum(
+	    P(risk_set) % normal_mgf(x_j(risk_set), mu, sigma)
+	);
+	Rcpp::Rcout << "P(risk):\n" << P(risk_set) << "\n";
+	Rcpp::Rcout << "sum: " << sum(P(risk_set)) << "\n";
+	Rcpp::Rcout << m << "\n";
+	t += log(m) - log(sum(P(risk_set))) - mu * x_j(i);
+    }
+    Rcpp::Rcout << "t: " << t << "\n";
+
+    double res = sigmoid(log(a_0 / b_0) + 1.0/2.0 -
+	    (lambda * sigma * sqrt(2.0 / PI) * exp(-pow(mu/sigma, 2 )) +
+	     lambda * mu * (1.0 - 2.0 * R::pnorm(- mu/sigma, 0, 1, 1, 0)) +
+	     log(sqrt(2.0 / PI) * 1.0 /(sigma * lambda)) + t));
+
+    return res;
+}
+
+
+
+struct kwargs {
+	double mu; 
+	double sigma; 
+	double a_0; 
+	double b_0; 
+	double lambda; 
+	const arma::vec &T;
+	const arma::vec &P;
+	const arma::uvec &F; 
+	const arma::vec &x_j;
+};
 
 
 // [[Rcpp::export]]
