@@ -86,7 +86,7 @@ opt_par_sig(double mu, double lambda, const arma::vec &T,
     const arma::uvec &F, const arma::vec &P, const arma::vec &x_j)
 {
     kwargs args = {mu, 0.0, lambda, T, F, P, x_j };
-    return Brent_fmin(0.0, 10.0, f_par_mu, static_cast<void *>(&args), 1e-5);
+    return Brent_fmin(0.0, 10.0, f_par_sig, static_cast<void *>(&args), 1e-5);
 }
 
 
