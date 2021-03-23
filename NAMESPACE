@@ -1,2 +1,3 @@
 importFrom(Rcpp, sourceCpp)
 useDynLib(survival.svb, .registration=TRUE)
+export(svb.fit)
