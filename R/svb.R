@@ -1,4 +1,3 @@
-
 #' Fit sparse variational Bayesian survival models.
 #' 
 #' @param Y observation times
@@ -53,9 +52,8 @@ svb.fit <- function(Y, delta, X, lambda, params, mu=NULL, sig=NULL, gam=NULL,
 
 
     if (model == "partial") {
-	if (length(params) == 2)
-	    stop("svb.fit: hyperparameter values not given. 
-		 ex: params=c(1e-3, 1e-3)")
+	if (length(params) != 2)
+	    stop("svb.fit: hyperparameter values not given. Ex: params=c(1e-3, 1e-3)")
 
 	res <- fit_partial(Y, delta, X, lambda, params[1], params[2],
 	    mu, sig, gam, maxiter, verbose);
@@ -63,9 +61,8 @@ svb.fit <- function(Y, delta, X, lambda, params, mu=NULL, sig=NULL, gam=NULL,
 
 
     if (model == "exponential") {
-	if (length(params) == 4)
-	    stop("svb.fit: hyperparameter values not given. 
-		 ex: params=c(1e-3, 1e-3, 1e-3, 1e-3)")
+	if (length(params) != 4)
+	    stop("svb.fit: hyperparameter values not given. Ex: params=c(1e-3, 1e-3, 1e-3, 1e-3)")
 
 	res <- fit_exp(Y, delta, X, lambda, params[1], params[2], params[3],
 	    params[4], mu, sig, gam, maxiter, verbose)
