@@ -2,64 +2,58 @@
 // Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #include <RcppArmadillo.h>
-#include <RcppEnsmallen.h>
 #include <Rcpp.h>
 
 using namespace Rcpp;
 
-// rm_P
-arma::vec rm_P(arma::vec P, arma::vec x_j, double m, double s, double g);
-RcppExport SEXP _survival_svb_rm_P(SEXP PSEXP, SEXP x_jSEXP, SEXP mSEXP, SEXP sSEXP, SEXP gSEXP) {
+// fit_exp
+Rcpp::List fit_exp(arma::vec T, arma::vec delta, arma::mat X, double lambda, double a_0, double b_0, double a_omega, double b_omega, arma::vec m, arma::vec s, arma::vec g, int maxiter, bool verbose);
+RcppExport SEXP _survival_svb_fit_exp(SEXP TSEXP, SEXP deltaSEXP, SEXP XSEXP, SEXP lambdaSEXP, SEXP a_0SEXP, SEXP b_0SEXP, SEXP a_omegaSEXP, SEXP b_omegaSEXP, SEXP mSEXP, SEXP sSEXP, SEXP gSEXP, SEXP maxiterSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::vec >::type P(PSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type x_j(x_jSEXP);
-    Rcpp::traits::input_parameter< double >::type m(mSEXP);
-    Rcpp::traits::input_parameter< double >::type s(sSEXP);
-    Rcpp::traits::input_parameter< double >::type g(gSEXP);
-    rcpp_result_gen = Rcpp::wrap(rm_P(P, x_j, m, s, g));
-    return rcpp_result_gen;
-END_RCPP
-}
-// add_P
-arma::vec add_P(arma::vec P, arma::vec x_j, double m, double s, double g);
-RcppExport SEXP _survival_svb_add_P(SEXP PSEXP, SEXP x_jSEXP, SEXP mSEXP, SEXP sSEXP, SEXP gSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::vec >::type P(PSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type x_j(x_jSEXP);
-    Rcpp::traits::input_parameter< double >::type m(mSEXP);
-    Rcpp::traits::input_parameter< double >::type s(sSEXP);
-    Rcpp::traits::input_parameter< double >::type g(gSEXP);
-    rcpp_result_gen = Rcpp::wrap(add_P(P, x_j, m, s, g));
-    return rcpp_result_gen;
-END_RCPP
-}
-// test_exp
-void test_exp(double mu, double sigma, double lambda, double omega, double a_0, double b_0, const arma::vec& P, const arma::vec& T, const arma::vec& x_j);
-RcppExport SEXP _survival_svb_test_exp(SEXP muSEXP, SEXP sigmaSEXP, SEXP lambdaSEXP, SEXP omegaSEXP, SEXP a_0SEXP, SEXP b_0SEXP, SEXP PSEXP, SEXP TSEXP, SEXP x_jSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< double >::type mu(muSEXP);
-    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type T(TSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type delta(deltaSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
     Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
-    Rcpp::traits::input_parameter< double >::type omega(omegaSEXP);
     Rcpp::traits::input_parameter< double >::type a_0(a_0SEXP);
     Rcpp::traits::input_parameter< double >::type b_0(b_0SEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type P(PSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type T(TSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type x_j(x_jSEXP);
-    test_exp(mu, sigma, lambda, omega, a_0, b_0, P, T, x_j);
-    return R_NilValue;
+    Rcpp::traits::input_parameter< double >::type a_omega(a_omegaSEXP);
+    Rcpp::traits::input_parameter< double >::type b_omega(b_omegaSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type m(mSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type s(sSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type g(gSEXP);
+    Rcpp::traits::input_parameter< int >::type maxiter(maxiterSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(fit_exp(T, delta, X, lambda, a_0, b_0, a_omega, b_omega, m, s, g, maxiter, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// fit_partial
+Rcpp::List fit_partial(arma::vec T, arma::vec delta, arma::mat X, double lambda, double a_0, double b_0, arma::vec m, arma::vec s, arma::vec g, int maxiter, bool verbose);
+RcppExport SEXP _survival_svb_fit_partial(SEXP TSEXP, SEXP deltaSEXP, SEXP XSEXP, SEXP lambdaSEXP, SEXP a_0SEXP, SEXP b_0SEXP, SEXP mSEXP, SEXP sSEXP, SEXP gSEXP, SEXP maxiterSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type T(TSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type delta(deltaSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< double >::type a_0(a_0SEXP);
+    Rcpp::traits::input_parameter< double >::type b_0(b_0SEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type m(mSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type s(sSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type g(gSEXP);
+    Rcpp::traits::input_parameter< int >::type maxiter(maxiterSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(fit_partial(T, delta, X, lambda, a_0, b_0, m, s, g, maxiter, verbose));
+    return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_survival_svb_rm_P", (DL_FUNC) &_survival_svb_rm_P, 5},
-    {"_survival_svb_add_P", (DL_FUNC) &_survival_svb_add_P, 5},
-    {"_survival_svb_test_exp", (DL_FUNC) &_survival_svb_test_exp, 9},
+    {"_survival_svb_fit_exp", (DL_FUNC) &_survival_svb_fit_exp, 13},
+    {"_survival_svb_fit_partial", (DL_FUNC) &_survival_svb_fit_partial, 11},
     {NULL, NULL, 0}
 };
 

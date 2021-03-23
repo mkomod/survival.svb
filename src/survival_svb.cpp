@@ -3,8 +3,8 @@
 #include "RcppArmadillo.h"
 
 #include "exponential.hpp"
-#include "partial.hpp"
 #include "optimiser.hpp"
+#include "partial.hpp"
 #include "utils.hpp"
 
 
@@ -23,7 +23,6 @@ fit_exp(arma::vec T, arma::vec delta, arma::mat X, double lambda,
     double a = a_omega; double b = b_omega;
     int n_delta = sum(delta);
    
-    // 
     arma::vec P = init_P(X, m, s, g);
     
     for (int iter = 0; iter < maxiter; ++iter) {
