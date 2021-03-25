@@ -1,4 +1,5 @@
 #include <math.h>
+#include <vector>
 
 #include "RcppArmadillo.h"
 
@@ -73,12 +74,17 @@ fit_partial(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 	double a_0, double b_0, arma::vec m, arma::vec s, arma::vec g,
 	int maxiter, bool verbose)
 {
-    int p = X.n_cols;
-
-    // indices of failed times from smallest to largest
-    arma::uvec R = sort_index(T); 
-    arma::uvec F = R(find(delta(R)));
+    // indices of failure times
+    arma::uvec F = find(delta);
     
+    // construct list of indices between two failure times
+    arma::vec FT = sort(T(F));
+    std::vector<arma::uvec> R;
+    for (int i = 0; i < FT.size() - 1; ++i)
+	R.push_back(find(T < FT(i+1) && T >= FT(i)));
+    R.push_back(find(T >= FT(FT.size() - 1)));
+
+    int p = X.n_cols;
     arma::vec m_old, s_old, g_old;
     arma::vec P = init_P(X, m, s, g);
 
@@ -91,9 +97,9 @@ fit_partial(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 
 	    P = rm_P(P, x_j, m(j), s(j), g(j));
 
-	    m(j) = opt_par_mu(s(j), lambda, T, F, P, x_j);
-	    s(j) = opt_par_sig(m(j), lambda, T, F, P, x_j);
-	    g(j) = opt_par_gam(m(j), s(j), a_0, b_0, lambda, T, F, P, x_j);
+	    m(j) = opt_par_mu(s(j), lambda, R, F, P, x_j);
+	    s(j) = opt_par_sig(m(j), lambda, R, F, P, x_j);
+	    g(j) = opt_par_gam(m(j), s(j), a_0, b_0, lambda, R, F, P, x_j);
 
 	    P = add_P(P, x_j, m(j), s(j), g(j));
 	}
@@ -110,3 +116,5 @@ fit_partial(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 	Rcpp::Named("gamma") = g
     );
 }
+
+
