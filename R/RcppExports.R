@@ -5,7 +5,7 @@ fit_exp <- function(T, delta, X, lambda, a_0, b_0, a_omega, b_omega, m, s, g, ma
     .Call(`_survival_svb_fit_exp`, T, delta, X, lambda, a_0, b_0, a_omega, b_omega, m, s, g, maxiter, verbose)
 }
 
-fit_partial <- function(T, delta, X, lambda, a_0, b_0, m, s, g, maxiter, verbose) {
-    .Call(`_survival_svb_fit_partial`, T, delta, X, lambda, a_0, b_0, m, s, g, maxiter, verbose)
+fit_partial <- function(T, delta, X, lambda, a_0, b_0, m, s, g, maxiter, tol, verbose) {
+    .Call(`_survival_svb_fit_partial`, T, delta, X, lambda, a_0, b_0, m, s, g, maxiter, tol, verbose)
 }
 
