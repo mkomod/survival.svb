@@ -72,7 +72,7 @@ fit_exp(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 Rcpp::List
 fit_partial(arma::vec T, arma::vec delta, arma::mat X, double lambda, 
 	double a_0, double b_0, arma::vec m, arma::vec s, arma::vec g,
-	int maxiter, bool verbose)
+	int maxiter, double tol, bool verbose)
 {
     // indices of failure times
     arma::uvec F = find(delta);
@@ -105,10 +105,19 @@ fit_partial(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 	}
 
 	// check convergence
-	if (sum(abs(m - m_old)) < 1e-6 && sum(abs(s - s_old)) < 1e-6)
-	    break;
+	if (sum(abs(m - m_old)) < tol && sum(abs(s - s_old)) < tol) {
+	    if (verbose)
+		Rcpp::Rcout << "Converged in: " << iter << " iterations\n";
+	    return Rcpp::List::create(
+		Rcpp::Named("mu") = m,
+		Rcpp::Named("sigma") = s,
+		Rcpp::Named("gamma") = g
+	    );
+	}
     }
-
+    
+    if (verbose)
+	Rcpp::Rcout << "Failed to converge\n";
 
     return Rcpp::List::create(
 	Rcpp::Named("mu") = m,
