@@ -52,7 +52,7 @@ fit_exp(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 	if (sum(abs(m_old - m)) < 1e-6 && sum(abs(s_old - s)) < 1e-6 &&
 	    std::abs(a_old - a) < 1e-6 && std::abs(b_old - b) < 1e-6) {
 	    if (verbose)
-		Rcpp::Rcout << "Converged in: " << iter << " iterations\n";
+		Rcpp::Rcout << "Converged in " << iter << " iterations\n";
 	    break;
 	}
     }
@@ -107,7 +107,7 @@ fit_partial(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 	// check convergence
 	if (sum(abs(m - m_old)) < tol && sum(abs(s - s_old)) < tol) {
 	    if (verbose)
-		Rcpp::Rcout << "Converged in: " << iter << " iterations\n";
+		Rcpp::Rcout << "Converged in " << iter << " iterations\n";
 	    return Rcpp::List::create(
 		Rcpp::Named("mu") = m,
 		Rcpp::Named("sigma") = s,
@@ -118,6 +118,7 @@ fit_partial(arma::vec T, arma::vec delta, arma::mat X, double lambda,
     
     if (verbose)
 	Rcpp::Rcout << "Failed to converge\n";
+
 
     return Rcpp::List::create(
 	Rcpp::Named("mu") = m,
