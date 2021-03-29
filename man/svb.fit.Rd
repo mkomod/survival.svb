@@ -8,25 +8,15 @@ svb.fit(Y,delta,X,lambda,params,mu = NULL,sig = NULL,gam = NULL,model = "partial
 }
 \arguments{
 \item{Y}{observation times}
-
 \item{delta}{Inidcator for right censoring 0: censored, 1: uncensored}
-
 \item{X}{model matrix}
-
 \item{lambda}{penalisation term}
-
 \item{mu}{initial values for means}
-
 \item{sig}{initial values for standard deviations}
-
 \item{gam}{initial values for gamma, the inclusion probability}
-
 \item{model}{one of "partial", "exponential"}
-
 \item{maxiter}{maximum number of iterations}
-
 \item{tol}{Stopping tolerance}
-
 \item{verbose}{print information}
 }
 \description{
