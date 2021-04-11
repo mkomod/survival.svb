@@ -39,7 +39,7 @@ f_exp_mu(double mu, void* args)
 
     double res = sum(omega * T % normal_mgf(x_j, mu, sigma) % P 
 	    - mu * delta % x_j) +
-	lambda * sigma * sqrt(2.0/PI) * exp(-pow(mu/sigma, 2)) +
+	lambda * sigma * sqrt(2.0/PI) * exp(-pow(mu/sigma, 2) * 0.5) +
 	lambda * mu * (1.0 - 2.0 * R::pnorm(- mu / sigma, 0, 1, 1, 0)) -
 	log(sigma);
 
@@ -65,7 +65,7 @@ f_exp_sig(double sigma, void* args)
 
     double res = sum(omega * T % normal_mgf(x_j, mu, sigma) % P 
 	    - mu * delta % x_j) +
-	lambda * sigma * sqrt(2.0/PI) * exp(-pow(mu/sigma, 2)) +
+	lambda * sigma * sqrt(2.0/PI) * exp(-pow(mu/sigma, 2) * 0.5) +
 	lambda * mu * (1.0 - 2.0 * R::pnorm(- mu / sigma, 0, 1, 1, 0)) -
 	log(sigma);
 
@@ -106,7 +106,7 @@ opt_exp_gam(double mu, double sigma, double omega, double lambda,
 	const arma::vec &delta, const arma::vec &x_j, bool verbose) 
 {
     double res = sigmoid(log(a_0 / b_0) + 1.0/2.0 -
-	    (lambda * sigma * sqrt(2.0 / PI) * exp(-pow(mu/sigma, 2 )) +
+	    (lambda * sigma * sqrt(2.0 / PI) * exp(-pow(mu/sigma, 2) * 0.5) +
 	     lambda * mu * (1.0 - 2.0 * R::pnorm(- mu/sigma, 0, 1, 1, 0)) +
 	     log(sqrt(2.0 / PI) * 1.0 /(sigma * lambda)) +
 	     sum(omega * T % P % (normal_mgf(x_j, mu, sigma) - 1) - 

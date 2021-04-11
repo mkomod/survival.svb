@@ -33,7 +33,7 @@ f_par_mu(double mu, void* args)
     t -= mu * sum(x_j(F));
 
     double res = t +
-	lambda * sigma * sqrt(2.0/PI) * exp(-pow(mu/sigma, 2)) +
+	lambda * sigma * sqrt(2.0/PI) * exp(-pow(mu/sigma, 2) * 0.5) +
 	lambda * mu * (1.0 - 2.0 * R::pnorm(- mu / sigma, 0, 1, 1, 0)) -
 	log(sigma);
 
@@ -62,7 +62,7 @@ f_par_sig(double sigma, void* args)
     t -= mu * sum(x_j(F));
 
     double res = t +
-	lambda * sigma * sqrt(2.0/PI) * exp(-pow(mu/sigma, 2)) +
+	lambda * sigma * sqrt(2.0/PI) * exp(-pow(mu/sigma, 2) * 0.5) +
 	lambda * mu * (1.0 - 2.0 * R::pnorm(- mu / sigma, 0, 1, 1, 0)) -
 	log(sigma);
 
@@ -103,7 +103,7 @@ opt_par_gam(double mu, double sigma, double a_0, double b_0, double lambda,
     t -= mu * sum(x_j(F));
 
     double res = sigmoid(log(a_0 / b_0) + 1.0/2.0 -
-	    (lambda * sigma * sqrt(2.0 / PI) * exp(-pow(mu/sigma, 2 )) +
+	    (lambda * sigma * sqrt(2.0 / PI) * exp(-pow(mu/sigma, 2) * 0.5) +
 	     lambda * mu * (1.0 - 2.0 * R::pnorm(- mu/sigma, 0, 1, 1, 0)) +
 	     log(sqrt(2.0 / PI) * 1.0 /(sigma * lambda)) + t));
 
