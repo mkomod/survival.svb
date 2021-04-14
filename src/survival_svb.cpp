@@ -40,10 +40,10 @@ fit_exp(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 	    // remove g_j M(x_j, m_j, s_j) - (1 - g_j) from P_i
 	    P = rm_P(P, x_j, m(j), s(j), g(j));
 
-	    m(j) = opt_exp_mu(s(j), omega, lambda, P, T, delta, x_j, verbose);
-	    s(j) = opt_exp_sig(m(j), omega, lambda, P, T, delta, x_j, verbose);
+	    m(j) = opt_exp_mu(s(j), omega, lambda, P, T, delta, x_j, false);
+	    s(j) = opt_exp_sig(m(j), omega, lambda, P, T, delta, x_j, false);
 	    g(j) = opt_exp_gam(m(j), s(j), omega, lambda, a_0, b_0, 
-		    P, T, delta, x_j, verbose);
+		    P, T, delta, x_j, false);
 
 	    // add in g_j M(x_j, m_j, s_j) - (1 - g_j) from P_i
 	    P = add_P(P, x_j, m(j), s(j), g(j));
