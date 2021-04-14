@@ -30,8 +30,8 @@ fit_exp(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 
 	m_old = m;  s_old = s;  g_old = g; a_old = a; b_old = b;
 
-	a = opt_exp_a(b, a_omega, b_omega, P, T, n_delta, verbose);
-	b = opt_exp_b(a, a_omega, b_omega, P, T, n_delta, verbose);
+	a = opt_exp_a(b, a_omega, b_omega, P, T, n_delta, false);
+	b = opt_exp_b(a, a_omega, b_omega, P, T, n_delta, false);
 
 	for (int j = 0; j < p; ++j) {
 	    arma::colvec x_j = X.col(j);
