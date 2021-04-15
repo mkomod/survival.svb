@@ -30,8 +30,8 @@ fit_exp(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 
 	m_old = m;  s_old = s;  g_old = g; a_old = a; b_old = b;
 
-	a = opt_exp_a(b, a_omega, b_omega, P, T, n_delta, false);
-	b = opt_exp_b(a, a_omega, b_omega, P, T, n_delta, false);
+	a = opt_exp_a(b, a_omega, b_omega, P, T, n_delta);
+	b = opt_exp_b(a, a_omega, b_omega, P, T, n_delta);
 
 	for (int j = 0; j < p; ++j) {
 	    arma::colvec x_j = X.col(j);
@@ -40,10 +40,10 @@ fit_exp(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 	    // remove g_j M(x_j, m_j, s_j) - (1 - g_j) from P_i
 	    P = rm_P(P, x_j, m(j), s(j), g(j));
 
-	    m(j) = opt_exp_mu(s(j), omega, lambda, P, T, delta, x_j, false);
-	    s(j) = opt_exp_sig(m(j), omega, lambda, P, T, delta, x_j, false);
+	    m(j) = opt_exp_mu(s(j), omega, lambda, P, T, delta, x_j);
+	    s(j) = opt_exp_sig(m(j), omega, lambda, P, T, delta, x_j);
 	    g(j) = opt_exp_gam(m(j), s(j), omega, lambda, a_0, b_0, 
-		    P, T, delta, x_j, false);
+		    P, T, delta, x_j);
 
 	    // add in g_j M(x_j, m_j, s_j) - (1 - g_j) from P_i
 	    P = add_P(P, x_j, m(j), s(j), g(j));

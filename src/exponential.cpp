@@ -20,7 +20,6 @@ struct exp_kwargs {
     const arma::vec &P;
     const arma::vec &T; 
     const int &n_delta;
-    bool verbose;
 };
 
 
@@ -34,17 +33,13 @@ f_exp_mu(double mu, void* args)
     const arma::vec &P = arg->P;
     const arma::vec &T = arg->T;
     const arma::vec &delta = arg->delta;
-    const arma::vec x_j = arg->x_j;
-    bool verbose = arg->verbose;
+    const arma::vec &x_j = arg->x_j;
 
     double res = sum(omega * T % normal_mgf(x_j, mu, sigma) % P 
 	    - mu * delta % x_j) +
 	lambda * sigma * sqrt(2.0/PI) * exp(-pow(mu/sigma, 2) * 0.5) +
 	lambda * mu * (1.0 - 2.0 * R::pnorm(- mu / sigma, 0, 1, 1, 0)) -
 	log(sigma);
-
-    if (verbose)
-	Rcpp::Rcout << "f: " << res << "\n";
 
     return res;
 }
@@ -60,17 +55,13 @@ f_exp_sig(double sigma, void* args)
     const arma::vec &P = arg->P;
     const arma::vec &T = arg->T;
     const arma::vec &delta = arg->delta;
-    const arma::vec x_j = arg->x_j;
-    bool verbose = arg->verbose;
+    const arma::vec &x_j = arg->x_j;
 
     double res = sum(omega * T % normal_mgf(x_j, mu, sigma) % P 
 	    - mu * delta % x_j) +
 	lambda * sigma * sqrt(2.0/PI) * exp(-pow(mu/sigma, 2) * 0.5) +
 	lambda * mu * (1.0 - 2.0 * R::pnorm(- mu / sigma, 0, 1, 1, 0)) -
 	log(sigma);
-
-    if (verbose)
-	Rcpp::Rcout << "f: " << res << "\n";
 
     return res;
 }
@@ -86,16 +77,12 @@ f_exp_a(double a, void* args)
     const arma::vec &P = arg->P;
     const arma::vec &T = arg->T;
     const int n_delta = arg->n_delta;
-    bool verbose = arg->verbose;
 
     double res = (sum(P % T) + b_omega) * (a / b) - a + 
 	(a + a_omega - n_delta) * R::digamma(a) +
 	// (n_delta - a_omega) * log(b) -
 	R::lgammafn(a);
     
-    if (verbose)
-	Rcpp::Rcout << "a: " << res << "\n";
-
     return res;
 };
 
@@ -103,7 +90,7 @@ f_exp_a(double a, void* args)
 double
 opt_exp_gam(double mu, double sigma, double omega, double lambda, 
 	double a_0, double b_0, const arma::vec &P, const arma::vec &T,
-	const arma::vec &delta, const arma::vec &x_j, bool verbose) 
+	const arma::vec &delta, const arma::vec &x_j) 
 {
     double res = sigmoid(log(a_0 / b_0) + 1.0/2.0 -
 	    (lambda * sigma * sqrt(2.0 / PI) * exp(-pow(mu/sigma, 2) * 0.5) +
@@ -112,9 +99,6 @@ opt_exp_gam(double mu, double sigma, double omega, double lambda,
 	     sum(omega * T % P % (normal_mgf(x_j, mu, sigma) - 1) - 
 		 mu * delta % x_j)));
 
-    if (verbose)
-	Rcpp::Rcout << "f: " << res << "\n";
-
     return res;
 }
 
@@ -122,9 +106,9 @@ opt_exp_gam(double mu, double sigma, double omega, double lambda,
 double
 opt_exp_mu(double sigma, double omega, double lambda, 
     const arma::vec &P, const arma::vec &T, const arma::vec &delta,
-    const arma::vec x_j, bool verbose)
+    const arma::vec &x_j)
 {
-    kwargs args = {0.0, sigma, lambda, omega, P, T, delta, x_j, verbose};
+    kwargs args = { 0.0, sigma, lambda, omega, P, T, delta, x_j };
     return Brent_fmin(-1e2, 1e2, f_exp_mu, static_cast<void*>(&args), 1e-5);
 }
 
@@ -132,26 +116,25 @@ opt_exp_mu(double sigma, double omega, double lambda,
 double
 opt_exp_sig(double mu, double omega, double lambda, 
     const arma::vec &P, const arma::vec &T, const arma::vec &delta,
-    const arma::vec x_j, bool verbose)
+    const arma::vec &x_j)
 {
-    kwargs args = {mu, 0.0, lambda, omega, P, T, delta, x_j, verbose};
+    kwargs args = { mu, 0.0, lambda, omega, P, T, delta, x_j };
     return Brent_fmin(0, 4, f_exp_sig, static_cast<void*>(&args), 1e-5);
 }
 
 
 double 
 opt_exp_a(double b, double a_omega, double b_omega,
-    const arma::vec &P, const arma::vec &T, const int n_delta,
-    bool verbose)
+    const arma::vec &P, const arma::vec &T, const int n_delta)
 {
-    exp_kwargs args = {0.0, b, a_omega, b_omega, P, T, n_delta, verbose};
+    exp_kwargs args = { 0.0, b, a_omega, b_omega, P, T, n_delta };
     return Brent_fmin(0, 1e100, f_exp_a, static_cast<void *>(&args), 1e-5);
 }
 
 
 double 
 opt_exp_b(double a, double a_omega, double b_omega, const arma::vec &P, 
-	const arma::vec &T, int n_delta, bool verbose)
+	const arma::vec &T, int n_delta)
 {
     return (b_omega + sum(P % T)) * a / (n_delta + a_omega);
 }
