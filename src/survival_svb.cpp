@@ -89,6 +89,8 @@ fit_partial(arma::vec T, arma::vec delta, arma::mat X, double lambda,
     arma::vec P = init_P(X, m, s, g);
 
     for (int iter = 0; iter < maxiter; ++iter) {
+	Rcpp::checkUserInterrupt();
+
 	// init old
 	m_old = m; s_old = s; g_old = g;
 
@@ -117,7 +119,7 @@ fit_partial(arma::vec T, arma::vec delta, arma::mat X, double lambda,
     }
     
     if (verbose)
-	Rcpp::Rcout << "Failed to converge\n";
+	Rcpp::Rcout << "Failed to converge in " << maxiter << " iterations\n.";
 
 
     return Rcpp::List::create(
