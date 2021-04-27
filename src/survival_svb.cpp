@@ -119,7 +119,7 @@ fit_partial(arma::vec T, arma::vec delta, arma::mat X, double lambda,
     }
     
     if (verbose)
-	Rcpp::Rcout << "Failed to converge in " << maxiter << " iterations\n.";
+	Rcpp::Rcout << "Failed to converge in " << maxiter << " iterations.\n";
 
 
     return Rcpp::List::create(
