@@ -86,7 +86,7 @@ fit_partial(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 
     int p = X.n_cols;
     arma::vec m_old, s_old, g_old;
-    arma::vec P = init_P(X, m, s, g);
+    arma::vec P = init_log_P(X, m, s, g);
 
     for (int iter = 0; iter < maxiter; ++iter) {
 	Rcpp::checkUserInterrupt();
@@ -97,13 +97,13 @@ fit_partial(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 	for (int j = 0; j < p; ++j) {
 	    arma::vec x_j = X.col(j);
 
-	    P = rm_P(P, x_j, m(j), s(j), g(j));
+	    P = rm_log_P(P, x_j, m(j), s(j), g(j));
 
 	    m(j) = opt_par_mu(s(j), lambda, R, F, P, x_j);
 	    s(j) = opt_par_sig(m(j), lambda, R, F, P, x_j);
 	    g(j) = opt_par_gam(m(j), s(j), a_0, b_0, lambda, R, F, P, x_j);
 
-	    P = add_P(P, x_j, m(j), s(j), g(j));
+	    P = add_log_P(P, x_j, m(j), s(j), g(j));
 	}
 
 	// check convergence

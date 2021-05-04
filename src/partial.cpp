@@ -25,10 +25,12 @@ f_par_mu(double mu, void* args)
 
     double t = 0.0;
     double s = 0.0;
+    double a = max(P);
     for (auto it = R.rbegin(); it != R.rend(); ++it) {
 	arma::uvec risk_set = (*it);
-	s += sum(P(risk_set) % normal_mgf(x_j(risk_set), mu, sigma));
-	t += log(s);
+	// P(risk_set) = sum_j log P_j(risk_set) 
+	s += sum(exp(P(risk_set) + log_normal_mgf(x_j(risk_set), mu, sigma) - a));
+	t += a + log(s);
     }
     t -= mu * sum(x_j(F));
 
@@ -54,10 +56,11 @@ f_par_sig(double sigma, void* args)
 
     double t = 0.0;
     double s = 0.0;
+    double a = max(P);
     for (auto it = R.rbegin(); it != R.rend(); ++it) {
 	arma::uvec risk_set = (*it);
-	s += sum(P(risk_set) % normal_mgf(x_j(risk_set), mu, sigma));
-	t += log(s);
+	s += sum(exp(P(risk_set) + log_normal_mgf(x_j(risk_set), mu, sigma) - a));
+	t += a + log(s);
     }
     t -= mu * sum(x_j(F));
 
@@ -94,13 +97,13 @@ opt_par_gam(double mu, double sigma, double a_0, double b_0, double lambda,
 	const arma::vec &P, const arma::vec &x_j)
 {
     double t = 0.0; double s = 0.0; double p = 0.0;
+    double a = max(P);
     for (auto it = R.rbegin(); it != R.rend(); ++it) {
 	arma::uvec risk_set = (*it);
-	s += sum(P(risk_set) % normal_mgf(x_j(risk_set), mu, sigma));
-	p += sum(P(risk_set));
+	s += sum(exp(P(risk_set) + log_normal_mgf(x_j(risk_set), mu, sigma) - a));
+	p += sum(exp(P(risk_set) - a));
 	t += log(s) - log(p);
     }
-    t -= mu * sum(x_j(F));
 
     double res = sigmoid(log(a_0 / b_0) + 1.0/2.0 -
 	    (lambda * sigma * sqrt(2.0 / PI) * exp(-pow(mu/sigma, 2) * 0.5) +
