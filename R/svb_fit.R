@@ -32,7 +32,7 @@
 #'
 #' @export
 svb.fit <- function(Y, delta, X, lambda, params, mu=NULL, sig=NULL, 
-    gam=NULL, model="partial", maxiter=1e3, tol=1e-3, verbose=FALSE)
+    gam=NULL, model="partial", maxiter=1e3, tol=1e-3, verbose=TRUE)
 {
     # parameter checks
     if (!(model %in% c("partial", "exponential")))
