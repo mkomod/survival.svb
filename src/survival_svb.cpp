@@ -104,6 +104,17 @@ fit_partial(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 	    g(j) = opt_par_gam(m(j), s(j), a_0, b_0, lambda, R, F, P, x_j);
 
 	    P = add_log_P(P, x_j, m(j), s(j), g(j));
+	    
+	    // check for overflow
+	    if (P.has_nan() || P.has_inf()) {
+		Rcpp::Rcout << "Overflow error after updating parameter " << j + 1 << 
+		    ".\n This may be a result of large values in X.\n" <<
+		    "max(X[ , " << j + 1 << "]) = " << max(x_j) << 
+		    " row num : " << index_max(x_j)+1 <<
+		    ".\nTry rescaling X \n";
+		return -1;
+	    }
+
 	}
 
 	// check convergence
