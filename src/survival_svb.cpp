@@ -108,9 +108,9 @@ fit_partial(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 	    // check for overflow
 	    if (P.has_nan() || P.has_inf()) {
 		Rcpp::Rcout << "Overflow error after updating parameter " << j + 1 << 
-		    ".\n This may be a result of large values in X.\n" <<
+		    ".\nThis may be a result of large values in X or large starting values.\n" <<
 		    "max(X[ , " << j + 1 << "]) = " << max(x_j) << 
-		    " row num : " << index_max(x_j)+1 <<
+		    "row num : " << index_max(x_j)+1 <<
 		    ".\nTry rescaling X \n";
 		return -1;
 	    }
