@@ -11,6 +11,7 @@
 #' @param maxiter maximum number of iterations
 #' @param tol Stopping tolerance
 #' @param verbose print information
+#' @param threads number of threads to use
 #'
 #' @examples
 #' n <- 250
@@ -32,7 +33,7 @@
 #'
 #' @export
 svb.fit <- function(Y, delta, X, lambda, params, mu=NULL, sig=NULL, 
-    gam=NULL, model="partial", maxiter=1e3, tol=1e-3, verbose=TRUE)
+    gam=NULL, model="partial", maxiter=1e3, tol=1e-3, verbose=TRUE, threads=1)
 {
     # parameter checks
     if (!(model %in% c("partial", "exponential")))
@@ -57,7 +58,7 @@ svb.fit <- function(Y, delta, X, lambda, params, mu=NULL, sig=NULL,
 	    stop("svb.fit: hyperparameter values not given. Ex: params=c(1e-3, 1e-3)")
 
 	res <- fit_partial(Y, delta, X, lambda, params[1], params[2],
-	    mu, sig, gam, maxiter, tol, verbose)
+	    mu, sig, gam, maxiter, tol, verbose, threads)
     } 
 
 
@@ -66,7 +67,7 @@ svb.fit <- function(Y, delta, X, lambda, params, mu=NULL, sig=NULL,
 	    stop("svb.fit: hyperparameter values not given. Ex: params=c(1e-3, 1e-3, 1e-3, 1e-3)")
 
 	res <- fit_exp(Y, delta, X, lambda, params[1], params[2], params[3],
-	    params[4], mu, sig, gam, maxiter, verbose)
+	    params[4], mu, sig, gam, maxiter, verbose, threads)
     }
 
     return(res)

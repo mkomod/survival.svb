@@ -4,7 +4,21 @@
 \alias{svb.fit}
 \title{Fit sparse variational Bayesian survival models.}
 \usage{
-svb.fit(Y, delta, X, lambda, params, mu = NULL, sig = NULL, gam = NULL, model = "partial", maxiter = 1000, tol = 0.001, verbose = TRUE)
+svb.fit(
+  Y,
+  delta,
+  X,
+  lambda,
+  params,
+  mu = NULL,
+  sig = NULL,
+  gam = NULL,
+  model = "partial",
+  maxiter = 1000,
+  tol = 0.001,
+  verbose = TRUE,
+  threads = 1
+)
 }
 \arguments{
 \item{Y}{observation times}
@@ -28,6 +42,8 @@ svb.fit(Y, delta, X, lambda, params, mu = NULL, sig = NULL, gam = NULL, model = 
 \item{tol}{Stopping tolerance}
 
 \item{verbose}{print information}
+
+\item{threads}{number of threads to use}
 }
 \description{
 Fit sparse variational Bayesian survival models.
