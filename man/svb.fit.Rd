@@ -4,19 +4,29 @@
 \alias{svb.fit}
 \title{Fit sparse variational Bayesian survival models.}
 \usage{
-svb.fit(Y,delta,X,lambda,params,mu = NULL,sig = NULL,gam = NULL,model = "partial",maxiter = 1000,tol = 0.001,verbose = FALSE)
+svb.fit(Y, delta, X, lambda, params, mu = NULL, sig = NULL, gam = NULL, model = "partial", maxiter = 1000, tol = 0.001, verbose = TRUE)
 }
 \arguments{
 \item{Y}{observation times}
+
 \item{delta}{Inidcator for right censoring 0: censored, 1: uncensored}
+
 \item{X}{model matrix}
+
 \item{lambda}{penalisation term}
+
 \item{mu}{initial values for means}
+
 \item{sig}{initial values for standard deviations}
+
 \item{gam}{initial values for gamma, the inclusion probability}
+
 \item{model}{one of "partial", "exponential"}
+
 \item{maxiter}{maximum number of iterations}
+
 \item{tol}{Stopping tolerance}
+
 \item{verbose}{print information}
 }
 \description{
