@@ -1,4 +1,5 @@
 #include <math.h>
+#include <omp.h>
 #include <vector>
 
 #include "RcppArmadillo.h"
@@ -13,8 +14,11 @@
 Rcpp::List 
 fit_exp(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 	double a_0,  double b_0, double a_omega, double b_omega, 
-	arma::vec m, arma::vec s, arma::vec g, int maxiter, bool verbose)
+	arma::vec m, arma::vec s, arma::vec g, int maxiter, bool verbose,
+	int threads)
 {
+    omp_set_num_threads(threads);
+
     int p = X.n_cols;
     int n = X.n_rows;
     arma::vec m_old = arma::vec(p, arma::fill::zeros);
@@ -72,8 +76,10 @@ fit_exp(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 Rcpp::List
 fit_partial(arma::vec T, arma::vec delta, arma::mat X, double lambda, 
 	double a_0, double b_0, arma::vec m, arma::vec s, arma::vec g,
-	int maxiter, double tol, bool verbose)
+	int maxiter, double tol, bool verbose, int threads)
 {
+    omp_set_num_threads(threads);
+
     // indices of failure times
     arma::uvec F = find(delta);
     
@@ -107,18 +113,18 @@ fit_partial(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 	    
 	    // check for overflow
 	    if (P.has_nan() || P.has_inf()) {
-		Rcpp::Rcout << "Overflow error after updating parameter " << j + 1 << 
-		    ".\nThis may be a result of large values in X or large starting values.\n" <<
-		    "max(X[ , " << j + 1 << "]) = " << max(x_j) << 
+		Rcpp::Rcout << "\nOverflow error after updating parameter " << j + 1 << 
+		    ".\n\n This may be a result of large values in X or large starting values.\n" <<
+		    "  max(X[ , " << j + 1 << "]) = " << max(x_j) << 
 		    "row num : " << index_max(x_j)+1 <<
-		    ".\nTry rescaling X \n";
-		return -1;
+		    ".\n\n Try rescaling X or using different starting values.\n\n";
+		return Rcpp::List::create();
 	    }
 
 	}
 
 	// check convergence
-	if (sum(abs(m - m_old)) < tol && sum(abs(s - s_old)) < tol) {
+	if (sum(abs(m - m_old)) < tol && sum(abs(s - s_old)) < tol && sum(abs(g - g_old)) < tol) {
 	    if (verbose)
 		Rcpp::Rcout << "Converged in " << iter << " iterations\n";
 	    return Rcpp::List::create(
