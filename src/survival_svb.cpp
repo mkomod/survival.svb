@@ -1,5 +1,4 @@
 #include <math.h>
-#include <omp.h>
 #include <vector>
 
 #include "RcppArmadillo.h"
@@ -14,10 +13,8 @@
 Rcpp::List 
 fit_exp(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 	double a_0,  double b_0, double a_omega, double b_omega, 
-	arma::vec m, arma::vec s, arma::vec g, int maxiter, bool verbose,
-	int threads)
+	arma::vec m, arma::vec s, arma::vec g, int maxiter, bool verbose)
 {
-    omp_set_num_threads(threads);
 
     int p = X.n_cols;
     int n = X.n_rows;
@@ -76,10 +73,8 @@ fit_exp(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 Rcpp::List
 fit_partial(arma::vec T, arma::vec delta, arma::mat X, double lambda, 
 	double a_0, double b_0, arma::vec m, arma::vec s, arma::vec g,
-	int maxiter, double tol, bool verbose, int threads)
+	int maxiter, double tol, bool verbose)
 {
-    omp_set_num_threads(threads);
-
     // indices of failure times
     arma::uvec F = find(delta);
     
@@ -103,28 +98,25 @@ fit_partial(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 	for (int j = 0; j < p; ++j) {
 	    arma::vec x_j = X.col(j);
 
-	    P = rm_log_P(P, x_j, m(j), s(j), g(j));
+	    rm_log_P(P, x_j, m(j), s(j), g(j));
 
 	    m(j) = opt_par_mu(s(j), lambda, R, F, P, x_j);
 	    s(j) = opt_par_sig(m(j), lambda, R, F, P, x_j);
 	    g(j) = opt_par_gam(m(j), s(j), a_0, b_0, lambda, R, F, P, x_j);
 
-	    P = add_log_P(P, x_j, m(j), s(j), g(j));
+	    add_log_P(P, x_j, m(j), s(j), g(j));
 	    
 	    // check for overflow
-	    if (P.has_nan() || P.has_inf()) {
-		Rcpp::Rcout << "\nOverflow error after updating parameter " << j + 1 << 
-		    ".\n\n This may be a result of large values in X or large starting values.\n" <<
-		    "  max(X[ , " << j + 1 << "]) = " << max(x_j) << 
-		    "row num : " << index_max(x_j)+1 <<
-		    ".\n\n Try rescaling X or using different starting values.\n\n";
-		return Rcpp::List::create();
-	    }
+	    if (P.has_nan() || P.has_inf())
+		Rcpp::stop("Overflow error. Try rescaling X or using\
+			different starting values");
 
 	}
 
 	// check convergence
-	if (sum(abs(m - m_old)) < tol && sum(abs(s - s_old)) < tol && sum(abs(g - g_old)) < tol) {
+	if (sum(abs(m - m_old)) < tol && 
+	    sum(abs(s - s_old)) < tol && 
+	    sum(abs(g - g_old)) < tol) {
 	    if (verbose)
 		Rcpp::Rcout << "Converged in " << iter << " iterations\n";
 	    return Rcpp::List::create(
@@ -137,7 +129,6 @@ fit_partial(arma::vec T, arma::vec delta, arma::mat X, double lambda,
     
     if (verbose)
 	Rcpp::Rcout << "Failed to converge in " << maxiter << " iterations.\n";
-
 
     return Rcpp::List::create(
 	Rcpp::Named("mu") = m,
