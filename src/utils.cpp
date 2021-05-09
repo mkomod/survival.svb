@@ -106,21 +106,19 @@ init_log_P(const arma::mat &X, const arma::vec &m, const arma::vec &s,
     return P;
 }
 
-arma::vec
-rm_log_P(arma::vec P, const arma::vec &x_j, double m, double s, double g)
+void
+rm_log_P(arma::vec &P, const arma::vec &x_j, double m, double s, double g)
 {
     for (int i = 0; i < x_j.n_rows; ++i)  {
 	P(i) -= P_ij(x_j(i), m, s, g);
     }
-    return P;
 }
 
-arma::vec
-add_log_P(arma::vec P, const arma::vec &x_j, double m, double s, double g)
+void
+add_log_P(arma::vec &P, const arma::vec &x_j, double m, double s, double g)
 {
     for (int i = 0; i < x_j.n_rows; ++i)  {
 	P(i) += P_ij(x_j(i), m, s, g);
     }
-    return P;
 }
 
