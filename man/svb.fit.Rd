@@ -10,14 +10,13 @@ svb.fit(
   X,
   lambda,
   params,
-  mu = NULL,
-  sig = NULL,
-  gam = NULL,
+  mu.init = NULL,
+  s.init = NULL,
+  g.init = NULL,
   model = "partial",
   maxiter = 1000,
   tol = 0.001,
-  verbose = TRUE,
-  threads = 1
+  verbose = TRUE
 )
 }
 \arguments{
@@ -29,11 +28,11 @@ svb.fit(
 
 \item{lambda}{penalisation term}
 
-\item{mu}{initial values for means}
+\item{mu.init}{initial values for means}
 
-\item{sig}{initial values for standard deviations}
+\item{s.init}{initial values for standard deviations}
 
-\item{gam}{initial values for gamma, the inclusion probability}
+\item{g.init}{initial values for gamma, the inclusion probability}
 
 \item{model}{one of "partial", "exponential"}
 
@@ -42,8 +41,6 @@ svb.fit(
 \item{tol}{Stopping tolerance}
 
 \item{verbose}{print information}
-
-\item{threads}{number of threads to use}
 }
 \description{
 Fit sparse variational Bayesian survival models.
