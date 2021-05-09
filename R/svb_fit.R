@@ -4,14 +4,13 @@
 #' @param delta Inidcator for right censoring 0: censored, 1: uncensored
 #' @param X model matrix
 #' @param lambda penalisation term
-#' @param mu initial values for means
-#' @param sig initial values for standard deviations
-#' @param gam initial values for gamma, the inclusion probability
+#' @param mu.init initial values for means
+#' @param s.init initial values for standard deviations
+#' @param g.init initial values for gamma, the inclusion probability
 #' @param model one of "partial", "exponential"
 #' @param maxiter maximum number of iterations
 #' @param tol Stopping tolerance
 #' @param verbose print information
-#' @param threads number of threads to use
 #'
 #' @examples
 #' n <- 250
@@ -32,8 +31,8 @@
 #' svb.fit(Y, delta, X, lambda, c(1e-3, 1e-3))
 #'
 #' @export
-svb.fit <- function(Y, delta, X, lambda, params, mu=NULL, sig=NULL, 
-    gam=NULL, model="partial", maxiter=1e3, tol=1e-3, verbose=TRUE, threads=1)
+svb.fit <- function(Y, delta, X, lambda, params, mu.init=NULL, s.init=NULL, 
+    g.init=NULL, model="partial", maxiter=1e3, tol=1e-3, verbose=TRUE)
 {
     # parameter checks
     if (!(model %in% c("partial", "exponential")))
@@ -43,14 +42,14 @@ svb.fit <- function(Y, delta, X, lambda, params, mu=NULL, sig=NULL,
 	stop("svb.fit: X is not a matrix")
     
     p <- ncol(X)
-    if (is.null(mu))
-	mu <- matrix(rnorm(p), ncol=1)
+    if (is.null(mu.init))
+	mu.init <- matrix(rnorm(p), ncol=1)
 
-    if (is.null(sig))
-	sig <- matrix(abs(rnorm(p)), ncol=1)
+    if (is.null(s.init))
+	s.init <- matrix(abs(rnorm(p)), ncol=1)
 
-    if (is.null(gam))
-	gam <- matrix(runif(p), ncol=1)
+    if (is.null(g.init))
+	g.init <- matrix(runif(p), ncol=1)
 
 
     if (model == "partial") {
@@ -58,7 +57,7 @@ svb.fit <- function(Y, delta, X, lambda, params, mu=NULL, sig=NULL,
 	    stop("svb.fit: hyperparameter values not given. Ex: params=c(1e-3, 1e-3)")
 
 	res <- fit_partial(Y, delta, X, lambda, params[1], params[2],
-	    mu, sig, gam, maxiter, tol, verbose, threads)
+	    mu.init, s.init, g.init, maxiter, tol, verbose)
     } 
 
 
@@ -67,7 +66,7 @@ svb.fit <- function(Y, delta, X, lambda, params, mu=NULL, sig=NULL,
 	    stop("svb.fit: hyperparameter values not given. Ex: params=c(1e-3, 1e-3, 1e-3, 1e-3)")
 
 	res <- fit_exp(Y, delta, X, lambda, params[1], params[2], params[3],
-	    params[4], mu, sig, gam, maxiter, verbose, threads)
+	    params[4], mu.init, s.init, g.init, maxiter, verbose)
     }
 
     return(res)
