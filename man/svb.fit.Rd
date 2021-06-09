@@ -8,8 +8,8 @@ svb.fit(
   Y,
   delta,
   X,
-  lambda,
-  params,
+  lambda = 0.5,
+  params = NULL,
   mu.init = NULL,
   s.init = NULL,
   g.init = NULL,
@@ -27,6 +27,8 @@ svb.fit(
 \item{X}{model matrix}
 
 \item{lambda}{penalisation term}
+
+\item{params}{model parameters partial: c(a_0, b_0), exponential: c(a_0, b_0, a_omega, b_omega).}
 
 \item{mu.init}{initial values for means}
 
@@ -46,12 +48,12 @@ svb.fit(
 Fit sparse variational Bayesian survival models.
 }
 \examples{
-n <- 250
+n <- 200
 omega <- 1
 censoring_lvl <- 0.4
 
 set.seed(1)
-b <- c(1, 1, rep(0, 50))
+b <- c(1, 1, rep(0, 348))
 p <- length(b)
 X <- matrix(rnorm(n * p), nrow=n)
 y <- runif(nrow(X))
@@ -61,6 +63,6 @@ delta  <- runif(n) > censoring_lvl   # 0: censored, 1: uncensored
 Y[!delta] <- Y[!delta] * runif(sum(!delta))
 
 lambda <- 0.5
-svb.fit(Y, delta, X, lambda, c(1e-3, 1e-3))
+svb.fit(Y, delta, X)
 
 }
