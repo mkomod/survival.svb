@@ -1,11 +1,7 @@
 #ifndef PARTIAL_HPP
 #define PARTIAL_HPP
 
-#include <vector>
-
 #include "RcppArmadillo.h"
-#include "utils.hpp"
-#include "optimiser.hpp"
 
 
 double opt_par_mu(double sigma, double lambda, 
