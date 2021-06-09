@@ -10,14 +10,14 @@
 
 
 // [[Rcpp::export]]
-Rcpp::List 
-fit_exp(arma::vec T, arma::vec delta, arma::mat X, double lambda,
-	double a_0,  double b_0, double a_omega, double b_omega, 
-	arma::vec m, arma::vec s, arma::vec g, int maxiter, bool verbose)
+Rcpp::List fit_exp(arma::vec T, arma::vec delta, arma::mat X, double lambda,
+    double a_0,  double b_0, double a_omega, double b_omega, 
+    arma::vec m, arma::vec s, arma::vec g, int maxiter, bool verbose)
 {
-
-    int p = X.n_cols;
-    int n = X.n_rows;
+    arma::uword p = X.n_cols;
+    arma::uword n = X.n_rows;
+    
+    // initialisations
     arma::vec m_old = arma::vec(p, arma::fill::zeros);
     arma::vec s_old = arma::vec(p, arma::fill::zeros);
     arma::vec g_old = arma::vec(p, arma::fill::zeros);
@@ -34,7 +34,7 @@ fit_exp(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 	a = opt_exp_a(b, a_omega, b_omega, P, T, n_delta);
 	b = opt_exp_b(a, a_omega, b_omega, P, T, n_delta);
 
-	for (int j = 0; j < p; ++j) {
+	for (arma::uword j = 0; j < p; ++j) {
 	    arma::colvec x_j = X.col(j);
 	    omega = a / b;
 	    
@@ -70,32 +70,33 @@ fit_exp(arma::vec T, arma::vec delta, arma::mat X, double lambda,
 
 
 // [[Rcpp::export]]
-Rcpp::List
-fit_partial(arma::vec T, arma::vec delta, arma::mat X, double lambda, 
-	double a_0, double b_0, arma::vec m, arma::vec s, arma::vec g,
-	int maxiter, double tol, bool verbose)
+Rcpp::List fit_partial(arma::vec T, arma::vec delta, arma::mat X, 
+    double lambda, double a_0, double b_0, arma::vec m, arma::vec s, 
+    arma::vec g, int maxiter, double tol, bool verbose)
 {
-    // indices of failure times
-    arma::uvec F = find(delta);
-    
-    // construct list of indices between two failure times
-    arma::vec FT = sort(T(F));
+    arma::uword p = X.n_cols;
+
+    arma::uvec F = find(delta);		// indices of failure times
+    arma::vec FT = sort(T(F));		// failure times
     std::vector<arma::uvec> R;
-    for (int i = 0; i < FT.size() - 1; ++i)
+
+    for (arma::uword i = 0; i < FT.size() - 1; ++i)
 	R.push_back(find(T < FT(i+1) && T >= FT(i)));
+
     R.push_back(find(T >= FT(FT.size() - 1)));
 
-    int p = X.n_cols;
+    // initialisations
     arma::vec m_old, s_old, g_old;
     arma::vec P = init_log_P(X, m, s, g);
+    arma::uvec js = arma::regspace<arma::uvec>(0, p-1);
 
     for (int iter = 0; iter < maxiter; ++iter) {
 	Rcpp::checkUserInterrupt();
 
-	// init old
+	// update old
 	m_old = m; s_old = s; g_old = g;
 
-	for (int j = 0; j < p; ++j) {
+	for (arma::uword j : js) {
 	    arma::vec x_j = X.col(j);
 
 	    rm_log_P(P, x_j, m(j), s(j), g(j));
