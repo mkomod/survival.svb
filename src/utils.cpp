@@ -75,7 +75,6 @@ static double P_ij(double x_ij,  double m, double s, double g)
 }
 
 
-// [[Rcpp::export]]
 arma::vec init_log_P(const arma::mat &X, const arma::vec &m, const arma::vec &s,
 	const arma::vec &g)
 {
