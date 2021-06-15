@@ -1,5 +1,5 @@
 #include "utils.hpp"
-#include <vector>
+
 
 double normal_mgf(double x, double m, double s)
 {
@@ -107,4 +107,5 @@ void add_log_P(arma::vec &P, const arma::vec &x_j, double m, double s, double g)
 	P(i) += P_ij(x_j(i), m, s, g);
     }
 }
+
 
