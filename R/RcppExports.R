@@ -9,3 +9,11 @@ fit_partial <- function(T, delta, X, lambda, a_0, b_0, m, s, g, maxiter, tol, ve
     .Call(`_survival_svb_fit_partial`, T, delta, X, lambda, a_0, b_0, m, s, g, maxiter, tol, verbose)
 }
 
+construct_risk_set <- function(T, delta) {
+    .Call(`_survival_svb_construct_risk_set`, T, delta)
+}
+
+log_likelihood <- function(b, X, R, F) {
+    .Call(`_survival_svb_log_likelihood`, b, X, R, F)
+}
+

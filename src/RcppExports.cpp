@@ -51,10 +51,38 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// construct_risk_set
+Rcpp::List construct_risk_set(const arma::vec& T, const arma::vec& delta);
+RcppExport SEXP _survival_svb_construct_risk_set(SEXP TSEXP, SEXP deltaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type T(TSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type delta(deltaSEXP);
+    rcpp_result_gen = Rcpp::wrap(construct_risk_set(T, delta));
+    return rcpp_result_gen;
+END_RCPP
+}
+// log_likelihood
+double log_likelihood(const arma::vec& b, const arma::mat& X, const std::vector<arma::uvec>& R, const arma::uvec F);
+RcppExport SEXP _survival_svb_log_likelihood(SEXP bSEXP, SEXP XSEXP, SEXP RSEXP, SEXP FSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type b(bSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const std::vector<arma::uvec>& >::type R(RSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec >::type F(FSEXP);
+    rcpp_result_gen = Rcpp::wrap(log_likelihood(b, X, R, F));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_survival_svb_fit_exp", (DL_FUNC) &_survival_svb_fit_exp, 13},
     {"_survival_svb_fit_partial", (DL_FUNC) &_survival_svb_fit_partial, 12},
+    {"_survival_svb_construct_risk_set", (DL_FUNC) &_survival_svb_construct_risk_set, 2},
+    {"_survival_svb_log_likelihood", (DL_FUNC) &_survival_svb_log_likelihood, 4},
     {NULL, NULL, 0}
 };
 
