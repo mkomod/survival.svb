@@ -9,40 +9,46 @@ svb.fit(
   delta,
   X,
   lambda = 0.5,
+  model = "partial",
   params = NULL,
   mu.init = NULL,
   s.init = NULL,
   g.init = NULL,
-  model = "partial",
   maxiter = 1000,
   tol = 0.001,
   verbose = TRUE
 )
 }
 \arguments{
-\item{Y}{observation times}
+\item{Y}{failure times}
 
-\item{delta}{Inidcator for right censoring 0: censored, 1: uncensored}
+\item{delta}{censoring indicator, 0: censored, 1: uncensored}
 
-\item{X}{model matrix}
+\item{X}{design matrix}
 
-\item{lambda}{penalisation term}
+\item{lambda}{penalisation hyperparameter}
 
-\item{params}{model parameters partial: c(a_0, b_0), exponential: c(a_0, b_0, a_omega, b_omega).}
+\item{model}{one of: \itemize{
+    \item{\code{"partial"}} (defualt),
+\item{\code{"exponential"}}
+}}
 
-\item{mu.init}{initial values for means}
+\item{params}{additional hyperparameters, defualts: \itemize{
+    \item{partial}: \code{c(a_0=1, b_0=ncol(X))},
+    \item{exponential}: \code{c(a_0=1, b_0=ncol(X), a_omega=1, b_omega=1)}.
+}}
 
-\item{s.init}{initial values for standard deviations}
+\item{mu.init}{initial values for means, default: \code{rnorm(ncol(X))}}
 
-\item{g.init}{initial values for gamma, the inclusion probability}
+\item{s.init}{initial values for standard deviations, default: \code{rep(0.2, ncol(X))}}
 
-\item{model}{one of "partial", "exponential"}
+\item{g.init}{initial values for gamma, default: \code{rep(0.5, ncol(X))}}
 
 \item{maxiter}{maximum number of iterations}
 
-\item{tol}{Stopping tolerance}
+\item{tol}{convergence tolerance}
 
-\item{verbose}{print information}
+\item{verbose}{print additional information}
 }
 \description{
 Fit sparse variational Bayesian survival models.
@@ -63,6 +69,6 @@ delta  <- runif(n) > censoring_lvl   # 0: censored, 1: uncensored
 Y[!delta] <- Y[!delta] * runif(sum(!delta))
 
 lambda <- 0.5
-svb.fit(Y, delta, X)
+f <- svb.fit(Y, delta, X)
 
 }
