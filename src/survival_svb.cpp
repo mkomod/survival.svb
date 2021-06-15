@@ -88,7 +88,6 @@ Rcpp::List fit_partial(arma::vec T, arma::vec delta, arma::mat X,
     // initialisations
     arma::vec m_old, s_old, g_old;
     arma::vec P = init_log_P(X, m, s, g);
-    arma::uvec js = arma::regspace<arma::uvec>(0, p-1);
 
     for (int iter = 0; iter < maxiter; ++iter) {
 	Rcpp::checkUserInterrupt();
@@ -96,7 +95,7 @@ Rcpp::List fit_partial(arma::vec T, arma::vec delta, arma::mat X,
 	// update old
 	m_old = m; s_old = s; g_old = g;
 
-	for (arma::uword j : js) {
+	for (arma::uword j = 0; j < p; ++j) {
 	    arma::vec x_j = X.col(j);
 
 	    rm_log_P(P, x_j, m(j), s(j), g(j));
@@ -138,4 +137,41 @@ Rcpp::List fit_partial(arma::vec T, arma::vec delta, arma::mat X,
     );
 }
 
+
+// [[Rcpp::export]]
+Rcpp::List construct_risk_set(const arma::vec &T, const arma::vec &delta)
+{
+    arma::uvec F = find(delta);		// indices of failure times
+    arma::vec FT = sort(T(F));		// failure times
+    std::vector<arma::uvec> R;
+
+    for (arma::uword i = 0; i < FT.size() - 1; ++i)
+	R.push_back(find(T < FT(i+1) && T >= FT(i)));
+
+    R.push_back(find(T >= FT(FT.size() - 1)));
+
+    return Rcpp::List::create(
+	Rcpp::Named("F") = F,
+	Rcpp::Named("R") = R
+    );
+}
+
+
+// [[Rcpp::export]]
+double log_likelihood(const arma::vec &b, const arma::mat &X,
+	const std::vector<arma::uvec> &R, const arma::uvec F)
+{
+    arma::vec xb = X * b;
+    double a = max(xb);
+    double risk = 0.0;
+    double tot = sum(xb(F));
+
+    for (auto it = R.rbegin(); it != R.rend(); ++it) {
+	arma::uvec risk_set = (*it);
+	risk += sum(exp(xb(risk_set) - a));
+	tot -= (a + log(risk));
+    }
+
+    return tot;
+}
 
