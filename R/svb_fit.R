@@ -38,24 +38,20 @@ svb.fit <- function(Y, delta, X, lambda=0.5, params=c(1, ncol(X)),
     if (!(lambda > 0)) stop("'lambda' must be greater than 0")
     
     p <- ncol(X)
-
     if (is.null(mu.init)) mu.init <- matrix(rnorm(p), ncol=1)
     if (is.null(s.init)) s.init <- matrix(rep(0.2, p))
     if (is.null(g.init)) g.init <- matrix(rep(0.5, p))
+    if (is.null(params)) params <- c(1, p)
+    if (length(params) != 2) stop("'params' takes two values.")
     
-    if (model == "partial") {
-	if (is.null(params)) params <- c(1, p)
-	if (length(params) != 2) stop("partial model requires two 'params'")
-	
-	# re-order Y, delta, X by failure time.
-	oY <- order(Y)
-	Y <- Y[oY]
-	delta <- delta[oY]
-	X <- X[oY, ]
+    # re-order Y, delta, X by failure time.
+    oY <- order(Y)
+    Y <- Y[oY]
+    delta <- delta[oY]
+    X <- X[oY, ]
 
-	res <- fit_partial(Y, delta, X, lambda, params[1], params[2],
-	    mu.init, s.init, g.init, maxiter, tol, verbose)
-    } 
+    res <- fit_partial(Y, delta, X, lambda, params[1], params[2],
+	mu.init, s.init, g.init, maxiter, tol, verbose)
 
     return(c(res, lambda=0.5, a0=params[1], b0=params[2]))
 }
