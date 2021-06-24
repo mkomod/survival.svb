@@ -4,17 +4,14 @@
 #' @param delta censoring indicator
 #' @param X deisgn matrix
 #' @param fit fit model
-#' @param lambda model hyperparameter
-#' @param a0 model hyperparameter
-#' @param b0 model hyperparameter
 #' @param nrep Monte Carlo samples
 #'
 #' @export
-elbo <- function(Y, delta, X, fit, lambda, a0, b0, nrep=1e4)
+elbo <- function(Y, delta, X, fit, nrep=1e4)
 {
     m <- fit$m; s <- fit$s; g <- fit$g
+    lambda <- fit$lambda; a0 <- fit$a0; b0 <- fit$b0
     w <- a0 / (a0 + b0)
-    rs <- construct_risk_set(Y, delta)
 
     res <- sum(
 	(1-g)*log(1 - g + 1e-18) - (1-g)*log(1 - w) +
@@ -24,7 +21,7 @@ elbo <- function(Y, delta, X, fit, lambda, a0, b0, nrep=1e4)
     ) -
     replicate(nrep, {
 	b. <- (runif(p) < g) * rnorm(p, m, s)
-	log_likelihood(b., X, rs$R, rs$F) 
+	log_likelihood(b., X, Y, delta)
     })
 
     return(list(mean=mean(res), sd=sd(res)))

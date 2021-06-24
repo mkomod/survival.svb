@@ -1,18 +1,11 @@
-#' Fit sparse variational Bayesian survival models.
+#' Fit sparse variational Bayesian proportional hazards model.
 #'
 #' @param Y failure times
 #' @param delta censoring indicator, 0: censored, 1: uncensored
 #' @param X design matrix
 #' @param lambda penalisation hyperparameter
-#' @param model one of: \itemize{
-#' 	\item{\code{"partial"}} (defualt),
-#'	\item{\code{"exponential"}}
-#' }
-#' @param params additional hyperparameters, defualts: \itemize{
-#' 	\item{partial}: \code{c(a_0=1, b_0=ncol(X))},
-#' 	\item{exponential}: \code{c(a_0=1, b_0=ncol(X), a_omega=1, b_omega=1)}.
-#' }
-#' @param mu.init initial values for means, default: \code{rnorm(ncol(X))}
+#' @param params additional hyperparameters, defualt: \code{c(a_0=1, b_0=ncol(X))}. For large \code{p} (~10,000) we suggest increasing \code{a_0}.
+#' @param mu.init initial values for means, default: \code{rnorm(ncol(X))}.
 #' @param s.init initial values for standard deviations, default: \code{rep(0.2, ncol(X))}
 #' @param g.init initial values for gamma, default: \code{rep(0.5, ncol(X))}
 #' @param maxiter maximum number of iterations
@@ -34,15 +27,13 @@
 #' delta  <- runif(n) > censoring_lvl   # 0: censored, 1: uncensored
 #' Y[!delta] <- Y[!delta] * runif(sum(!delta))
 #' 
-#' lambda <- 0.5
 #' f <- svb.fit(Y, delta, X)
 #'
 #' @export
-svb.fit <- function(Y, delta, X, lambda=0.5, model="partial", params=NULL, 
+svb.fit <- function(Y, delta, X, lambda=0.5, params=c(1, ncol(X)),
     mu.init=NULL, s.init=NULL, g.init=NULL, maxiter=1e3, tol=1e-3, verbose=TRUE)
 {
 
-    if (!(model %in% c("partial", "exponential"))) stop("'model' unknown")
     if (!is.matrix(X)) stop("'X' must be a matrix")
     if (!(lambda > 0)) stop("'lambda' must be greater than 0")
     
@@ -55,18 +46,16 @@ svb.fit <- function(Y, delta, X, lambda=0.5, model="partial", params=NULL,
     if (model == "partial") {
 	if (is.null(params)) params <- c(1, p)
 	if (length(params) != 2) stop("partial model requires two 'params'")
+	
+	# re-order Y, delta, X by failure time.
+	oY <- order(Y)
+	Y <- Y[oY]
+	delta <- delta[oY]
+	X <- X[oY, ]
 
 	res <- fit_partial(Y, delta, X, lambda, params[1], params[2],
 	    mu.init, s.init, g.init, maxiter, tol, verbose)
     } 
 
-    if (model == "exponential") {
-	if (is.null(params)) params <- c(1, p, 1, 1)
-	if (length(params) != 4) stop("exponential model requires two 'params'")
-
-	res <- fit_exp(Y, delta, X, lambda, params[1], params[2], params[3],
-	    params[4], mu.init, s.init, g.init, maxiter, verbose)
-    }
-
-    return(res)
+    return(c(res, lambda=0.5, a0=params[1], b0=params[2]))
 }
