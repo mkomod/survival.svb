@@ -6,7 +6,7 @@
 #include "optimiser.hpp"
 #include "partial.hpp"
 #include "utils.hpp"
-#include "survival.svb.h"
+#include "survival.svb_types.h"
 
 
 // [[Rcpp::export]]
