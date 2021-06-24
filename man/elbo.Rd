@@ -4,7 +4,7 @@
 \alias{elbo}
 \title{Compute the evidence lower bound (ELBO) for the Cox model}
 \usage{
-elbo(Y, delta, X, fit, lambda, a0, b0, nrep = 10000)
+elbo(Y, delta, X, fit, nrep = 10000)
 }
 \arguments{
 \item{Y}{failure times}
@@ -14,12 +14,6 @@ elbo(Y, delta, X, fit, lambda, a0, b0, nrep = 10000)
 \item{X}{deisgn matrix}
 
 \item{fit}{fit model}
-
-\item{lambda}{model hyperparameter}
-
-\item{a0}{model hyperparameter}
-
-\item{b0}{model hyperparameter}
 
 \item{nrep}{Monte Carlo samples}
 }

@@ -2,15 +2,14 @@
 % Please edit documentation in R/svb_fit.R
 \name{svb.fit}
 \alias{svb.fit}
-\title{Fit sparse variational Bayesian survival models.}
+\title{Fit sparse variational Bayesian proportional hazards model.}
 \usage{
 svb.fit(
   Y,
   delta,
   X,
   lambda = 0.5,
-  model = "partial",
-  params = NULL,
+  params = c(1, ncol(X)),
   mu.init = NULL,
   s.init = NULL,
   g.init = NULL,
@@ -28,17 +27,9 @@ svb.fit(
 
 \item{lambda}{penalisation hyperparameter}
 
-\item{model}{one of: \itemize{
-    \item{\code{"partial"}} (defualt),
-\item{\code{"exponential"}}
-}}
+\item{params}{additional hyperparameters, defualt: \code{c(a_0=1, b_0=ncol(X))}. For large \code{p} (~10,000) we suggest increasing \code{a_0}.}
 
-\item{params}{additional hyperparameters, defualts: \itemize{
-    \item{partial}: \code{c(a_0=1, b_0=ncol(X))},
-    \item{exponential}: \code{c(a_0=1, b_0=ncol(X), a_omega=1, b_omega=1)}.
-}}
-
-\item{mu.init}{initial values for means, default: \code{rnorm(ncol(X))}}
+\item{mu.init}{initial values for means, default: \code{rnorm(ncol(X))}.}
 
 \item{s.init}{initial values for standard deviations, default: \code{rep(0.2, ncol(X))}}
 
@@ -51,7 +42,7 @@ svb.fit(
 \item{verbose}{print additional information}
 }
 \description{
-Fit sparse variational Bayesian survival models.
+Fit sparse variational Bayesian proportional hazards model.
 }
 \examples{
 n <- 200
@@ -68,7 +59,6 @@ Y <- log(1 - y) / - (exp(X \%*\% b) * omega)
 delta  <- runif(n) > censoring_lvl   # 0: censored, 1: uncensored
 Y[!delta] <- Y[!delta] * runif(sum(!delta))
 
-lambda <- 0.5
 f <- svb.fit(Y, delta, X)
 
 }
