@@ -118,7 +118,7 @@ double opt_par_gam(double mu, double sigma, double lambda, double a_0, double b_
 	    p += exp(P(j) - b);
 	}
 	
-	t += (a + log(s)) - (b  + log(p));
+	t += (a + log(s)) - (b  + log(p)) - mu * x_j(icf);
 
 	ilf = icf;
     }
