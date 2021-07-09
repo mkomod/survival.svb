@@ -53,5 +53,5 @@ svb.fit <- function(Y, delta, X, lambda=0.5, params=c(1, ncol(X)),
     res <- fit_partial(Y, delta, X, lambda, params[1], params[2],
 	mu.init, s.init, g.init, maxiter, tol, verbose)
 
-    return(c(res, lambda=0.5, a0=params[1], b0=params[2]))
+    return(c(res, lambda=lambda, a0=params[1], b0=params[2]))
 }
