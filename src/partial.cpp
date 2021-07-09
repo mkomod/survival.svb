@@ -16,7 +16,9 @@ static double pm(double mu, double sigma, const vec &P, const vec &x_j,
 {
     double s = 0.0;
     double t = 0.0;
-    double a = (P + log_normal_mgf(x_j, mu, sigma)).maxCoeff();
+    double a = 0.0;
+
+    // a = (P + log_normal_mgf(x_j, mu, sigma)).maxCoeff();
 	
     uint icf = 0;
     uint ilf = x_j.rows();
@@ -105,8 +107,8 @@ double opt_par_gam(double mu, double sigma, double lambda, double a_0, double b_
     double a = 0.0; 
     double b = 0.0;
 
-    a = std::min((P + log_normal_mgf(x_j, mu, sigma)).maxCoeff() / 5.0, 175.0);
-    b = std::min(P.maxCoeff() / 5.0, 175.0);
+    // a = std::min((P + log_normal_mgf(x_j, mu, sigma)).maxCoeff() / 5.0, 175.0);
+    // b = std::min(P.maxCoeff() / 5.0, 175.0);
     uint icf = 0;
     uint ilf = x_j.rows();
 
