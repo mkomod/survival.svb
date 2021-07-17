@@ -10,7 +10,7 @@ double normal_mgf(double x, double m, double s)
 
 double log_normal_mgf(double x, double m, double s) 
 {
-    return m * x + 0.5 * s * s * x * x;
+    return m * x + 0.5 * x * x * s * s;
 }
 
 
@@ -39,7 +39,7 @@ static double P_ij(double x_ij,  double m, double s, double g)
     if (g == 0.0)
 	return 0;
     
-    double x = x_ij * m + 0.5 * x_ij * x_ij * s * s; // log(normal mgf)
+    double x = log_normal_mgf(x_ij, m, s);
     if (g == 1.0)
 	return x;
     
@@ -70,7 +70,6 @@ vec init_log_P(const mat &X, const vec &m, const vec &s, const vec &g)
 }
 
 
-// untested
 void rm_log_P(vec &P, const vec &x_j, double m, double s, double g)
 {
     for (uint i = 0; i < x_j.rows(); ++i)  {
@@ -79,7 +78,6 @@ void rm_log_P(vec &P, const vec &x_j, double m, double s, double g)
 }
 
 
-// untested
 void add_log_P(vec &P, const vec &x_j, double m, double s, double g)
 {
     for (uint i = 0; i < x_j.rows(); ++i)  {
