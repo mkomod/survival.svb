@@ -21,10 +21,8 @@ Rcpp::List fit_partial(vec T, vec delta, mat X, double lambda, double a_0,
     vec m_old, s_old, g_old;
     vec P = init_log_P(X, m, s, g);
 
-    for (int iter = 0; iter < maxiter; ++iter) {
-	Rcpp::checkUserInterrupt();
+    for (int iter = 1; iter < maxiter; ++iter) {
 
-	// update old
 	m_old = m; s_old = s; g_old = g;
 
 	for (uint j = 0; j < p; ++j) {
@@ -40,10 +38,13 @@ Rcpp::List fit_partial(vec T, vec delta, mat X, double lambda, double a_0,
 	    
 	    // check for overflow
 	    if (!P.allFinite())
-		Rcpp::stop("Overflow error. Try rescaling X or using\
-			different starting values");
+		Rcpp::stop("Overflow error. Try rescaling X or using "
+			"different starting values");
 
 	}
+
+	// check for break
+	Rcpp::checkUserInterrupt();
 
 	// check convergence
 	if ((m - m_old).cwiseAbs().sum() < tol && 
