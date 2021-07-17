@@ -7,6 +7,26 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
+// pm
+double pm(double mu, double sigma, const vec& P, const vec& x_j, const std::vector<uint>& delta_ord);
+RcppExport SEXP _survival_svb_pm(SEXP muSEXP, SEXP sigmaSEXP, SEXP PSEXP, SEXP x_jSEXP, SEXP delta_ordSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< const vec& >::type P(PSEXP);
+    Rcpp::traits::input_parameter< const vec& >::type x_j(x_jSEXP);
+    Rcpp::traits::input_parameter< const std::vector<uint>& >::type delta_ord(delta_ordSEXP);
+    rcpp_result_gen = Rcpp::wrap(pm(mu, sigma, P, x_j, delta_ord));
+    return rcpp_result_gen;
+END_RCPP
+}
 // opt_par_mu
 double opt_par_mu(double sigma, double lambda, const vec& P, const vec& x_j, const std::vector<uint>& delta_ord);
 RcppExport SEXP _survival_svb_opt_par_mu(SEXP sigmaSEXP, SEXP lambdaSEXP, SEXP PSEXP, SEXP x_jSEXP, SEXP delta_ordSEXP) {
@@ -167,6 +187,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_survival_svb_pm", (DL_FUNC) &_survival_svb_pm, 5},
     {"_survival_svb_opt_par_mu", (DL_FUNC) &_survival_svb_opt_par_mu, 5},
     {"_survival_svb_opt_par_sig", (DL_FUNC) &_survival_svb_opt_par_sig, 5},
     {"_survival_svb_opt_par_gam", (DL_FUNC) &_survival_svb_opt_par_gam, 8},
