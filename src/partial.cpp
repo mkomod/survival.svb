@@ -82,7 +82,7 @@ double opt_par_mu(double sigma, double lambda, const vec &P, const vec &x_j,
 	const std::vector<uint> &delta_ord)
 {
     kwargs args = { 0.0, sigma, lambda, P, x_j, delta_ord };
-    double res = Brent_fmin(-1e2, 1e2, f_par_mu, static_cast<void *>(&args), 1e-5);
+    double res = Brent_fmin(-10.0, 10.0, f_par_mu, static_cast<void *>(&args), 1e-5);
     return res;
 }
 
