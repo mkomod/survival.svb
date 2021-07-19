@@ -9,8 +9,13 @@
 #' @export
 elbo <- function(Y, delta, X, fit, nrep=1e4)
 {
-    m <- fit$m; s <- fit$s; g <- fit$g
-    lambda <- fit$lambda; a0 <- fit$a0; b0 <- fit$b0
+    p <- ncol(X)
+    m <- fit$m
+    s <- fit$s
+    g <- fit$g
+    lambda <- fit$lambda
+    a0 <- fit$a0
+    b0 <- fit$b0
     w <- a0 / (a0 + b0)
 
     res <- replicate(nrep, {
