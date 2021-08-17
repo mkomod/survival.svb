@@ -21,7 +21,7 @@ Rcpp::List fit_partial(vec T, vec delta, mat X, double lambda, double a_0,
     vec m_old, s_old, g_old;
     vec P = init_log_P(X, m, s, g);
 
-    for (int iter = 1; iter < maxiter; ++iter) {
+    for (int iter = 1; iter <= maxiter; ++iter) {
 
 	m_old = m; s_old = s; g_old = g;
 
