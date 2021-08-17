@@ -127,13 +127,13 @@ double log_likelihood(const vec &b, const mat &X, const vec &T, const vec &delta
     double den = 0.0;
     double tot = 0.0;
 
-    uint icf = 0;			// index of current failure
-    uint ilf = X.rows();		// index of last failure
+    int icf = 0;			// index of current failure
+    int ilf = X.rows();			// index of last failure
 
     for (int i = delta_ord.size() - 1; i >= 0; --i) {
 	icf = delta_ord.at(i);		// set the current failure to i
 
-	for (uint j = icf; j <= ilf - 1; ++j)
+	for (int j = icf; j <= ilf - 1; ++j)
 	    den += exp(xb(T_ord.at(j)) - a);		// prevent overflow
 	
 	tot += xb(T_ord.at(icf)) - (a + log(den));
