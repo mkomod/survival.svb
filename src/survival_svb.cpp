@@ -55,7 +55,8 @@ Rcpp::List fit_partial(vec T, vec delta, mat X, double lambda, double a_0,
 	    return Rcpp::List::create(
 		Rcpp::Named("mu") = m,
 		Rcpp::Named("sigma") = s,
-		Rcpp::Named("gamma") = g
+		Rcpp::Named("gamma") = g,
+		Rcpp::Named("converged") = true
 	    );
 	}
     }
@@ -66,7 +67,8 @@ Rcpp::List fit_partial(vec T, vec delta, mat X, double lambda, double a_0,
     return Rcpp::List::create(
 	Rcpp::Named("mu") = m,
 	Rcpp::Named("sigma") = s,
-	Rcpp::Named("gamma") = g
+	Rcpp::Named("gamma") = g,
+	Rcpp::Named("converged") = false
     );
 }
 
