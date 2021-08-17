@@ -27,7 +27,7 @@ elbo <- function(Y, delta, X, fit, nrep=1e4)
 	     log(sqrt(2) / (sqrt(pi) * s * lambda)) -
 	     0.5 -
 	     log(a0 / b0)) +
-	g * log(g) + (1-g)*log(1 - g + 1e-18) + log(b0 / (a0 + b0))
+	g * log(g) + (1-g)*log(1 - g + 1e-18) - log(b0 / (a0 + b0))
     )
 
     return(list(mean=mean(res), sd=sd(res)))
