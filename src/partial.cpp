@@ -78,21 +78,22 @@ static double f_par_sig(double sigma, void* args)
 
 
 // [[Rcpp::export]]
-double opt_par_mu(double sigma, double lambda, const vec &P, const vec &x_j,
+double opt_par_mu(double mu, double sigma, double lambda, const vec &P, const vec &x_j,
 	const std::vector<uint> &delta_ord)
 {
-    kwargs args = { 0.0, sigma, lambda, P, x_j, delta_ord };
-    double res = Brent_fmin(-10.0, 10.0, f_par_mu, static_cast<void *>(&args), 1e-5);
+    kwargs args = { mu, sigma, lambda, P, x_j, delta_ord };
+    double res = Brent_fmin(mu-2.0*abs(mu), mu+2.0*abs(mu), 
+	    f_par_mu, static_cast<void *>(&args), 1e-5);
     return res;
 }
 
 
 // [[Rcpp::export]]
-double opt_par_sig(double mu, double lambda, const vec &P, const vec &x_j,
+double opt_par_sig(double sigma, double mu, double lambda, const vec &P, const vec &x_j,
 	const std::vector<uint> &delta_ord)
 {
-    kwargs args = { mu, 0.0, lambda, P, x_j, delta_ord };
-    double res = Brent_fmin(1e-4, 2.5, f_par_sig, static_cast<void *>(&args), 1e-5);
+    kwargs args = { mu, sigma, lambda, P, x_j, delta_ord };
+    double res = Brent_fmin(1e-4, 2.0*sigma, f_par_sig, static_cast<void *>(&args), 1e-5);
     return res;
 }
 
