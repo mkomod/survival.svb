@@ -30,8 +30,8 @@ Rcpp::List fit_partial(vec T, vec delta, mat X, double lambda, double a_0,
 
 	    rm_log_P(P, x_j, m(j), s(j), g(j));
 
-	    m(j) = opt_par_mu( s(j), lambda, P, x_j, delta_ord);
-	    s(j) = opt_par_sig(m(j), lambda, P, x_j, delta_ord);
+	    m(j) = opt_par_mu( m(j), s(j), lambda, P, x_j, delta_ord);
+	    s(j) = opt_par_sig(s(j), m(j), lambda, P, x_j, delta_ord);
 	    g(j) = opt_par_gam(m(j), s(j), lambda, a_0, b_0, P, x_j, delta_ord);
 
 	    add_log_P(P, x_j, m(j), s(j), g(j));
