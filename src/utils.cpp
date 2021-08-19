@@ -117,7 +117,7 @@ std::vector<uint> order_delta(const vec &T, const vec &delta)
 
 // compute the log log_likelihood
 // [[Rcpp::export]]
-double log_likelihood(const vec &b, const mat &X, const vec &T, const vec &delta)
+double log_likelihood(const vec &T, const vec &delta, const mat &X, const vec &b)
 {
     std::vector<uint> T_ord = order_T(T);
     std::vector<uint> delta_ord = order_delta(T, delta);
