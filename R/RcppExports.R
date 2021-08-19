@@ -45,7 +45,7 @@ order_delta <- function(T, delta) {
     .Call(`_survival_svb_order_delta`, T, delta)
 }
 
-log_likelihood <- function(b, X, T, delta) {
-    .Call(`_survival_svb_log_likelihood`, b, X, T, delta)
+log_likelihood <- function(T, delta, X, b) {
+    .Call(`_survival_svb_log_likelihood`, T, delta, X, b)
 }
 

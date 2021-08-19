@@ -174,16 +174,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // log_likelihood
-double log_likelihood(const vec& b, const mat& X, const vec& T, const vec& delta);
-RcppExport SEXP _survival_svb_log_likelihood(SEXP bSEXP, SEXP XSEXP, SEXP TSEXP, SEXP deltaSEXP) {
+double log_likelihood(const vec& T, const vec& delta, const mat& X, const vec& b);
+RcppExport SEXP _survival_svb_log_likelihood(SEXP TSEXP, SEXP deltaSEXP, SEXP XSEXP, SEXP bSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const vec& >::type b(bSEXP);
-    Rcpp::traits::input_parameter< const mat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const vec& >::type T(TSEXP);
     Rcpp::traits::input_parameter< const vec& >::type delta(deltaSEXP);
-    rcpp_result_gen = Rcpp::wrap(log_likelihood(b, X, T, delta));
+    Rcpp::traits::input_parameter< const mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const vec& >::type b(bSEXP);
+    rcpp_result_gen = Rcpp::wrap(log_likelihood(T, delta, X, b));
     return rcpp_result_gen;
 END_RCPP
 }
