@@ -7,6 +7,6 @@ Author: Michael Komodromos
 Maintainer: Michael Komodromos <mk1019@ic.ac.uk>
 Description: 
 License: 
-Imports: Rcpp (>= 1.0.6)
+Imports: Rcpp (>= 1.0.6), glmnet, survival
 LinkingTo: Rcpp, RcppEigen
 RoxygenNote: 7.1.1
