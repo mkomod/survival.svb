@@ -9,35 +9,41 @@ svb.fit(
   delta,
   X,
   lambda = 0.5,
-  params = c(1, ncol(X)),
+  a0 = 1,
+  b0 = ncol(X),
   mu.init = NULL,
-  s.init = NULL,
-  g.init = NULL,
+  s.init = rep(0.05, ncol(X)),
+  g.init = rep(0.5, ncol(X)),
   maxiter = 1000,
   tol = 0.001,
+  alpha = 1,
   verbose = TRUE
 )
 }
 \arguments{
-\item{Y}{failure times}
+\item{Y}{Failure times}
 
-\item{delta}{censoring indicator, 0: censored, 1: uncensored}
+\item{delta}{Censoring indicator, 0: censored, 1: uncensored}
 
-\item{X}{design matrix}
+\item{X}{Design matrix}
 
-\item{lambda}{penalisation hyperparameter}
+\item{lambda}{Penalisation parameter, default: \code{lambda=0.5}}
 
-\item{params}{additional hyperparameters, defualt: \code{c(a_0=1, b_0=ncol(X))}. For large \code{p} (~10,000) we suggest increasing \code{a_0}.}
+\item{a0}{Beta distribution parameter, default: \code{a0=1}.}
 
-\item{mu.init}{initial values for means, default: \code{rnorm(ncol(X))}.}
+\item{b0}{Beta distribution parameter, default: \code{b0=rnorm(ncol(X))}.}
 
-\item{s.init}{initial values for standard deviations, default: \code{rep(0.2, ncol(X))}}
+\item{mu.init}{Initial value for means, default taken from elasticnet fit}
+
+\item{s.init}{initial values for standard deviations, default: \code{rep(0.05, ncol(X))}}
 
 \item{g.init}{initial values for gamma, default: \code{rep(0.5, ncol(X))}}
 
 \item{maxiter}{maximum number of iterations}
 
 \item{tol}{convergence tolerance}
+
+\item{alpha}{The elasticnet mixing parameter used for initialising \code{mu.init}, when \code{alpha=1} the lasso penalty is used and \code{alpha=0} the ridge penalty, values between 0 and 1 give a mixture of the two penalties.}
 
 \item{verbose}{print additional information}
 }
