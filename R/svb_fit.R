@@ -1,15 +1,17 @@
 #' Fit sparse variational Bayesian proportional hazards model.
 #'
-#' @param Y failure times
-#' @param delta censoring indicator, 0: censored, 1: uncensored
-#' @param X design matrix
-#' @param lambda penalisation hyperparameter
-#' @param params additional hyperparameters, defualt: \code{c(a_0=1, b_0=ncol(X))}. For large \code{p} (~10,000) we suggest increasing \code{a_0}.
-#' @param mu.init initial values for means, default: \code{rnorm(ncol(X))}.
-#' @param s.init initial values for standard deviations, default: \code{rep(0.2, ncol(X))}
+#' @param Y Failure times
+#' @param delta Censoring indicator, 0: censored, 1: uncensored
+#' @param X Design matrix
+#' @param lambda Penalisation parameter, default: \code{lambda=0.5}
+#' @param a0 Beta distribution parameter, default: \code{a0=1}.
+#' @param b0 Beta distribution parameter, default: \code{b0=rnorm(ncol(X))}.
+#' @param mu.init Initial value for means, default taken from elasticnet fit
+#' @param s.init initial values for standard deviations, default: \code{rep(0.05, ncol(X))}
 #' @param g.init initial values for gamma, default: \code{rep(0.5, ncol(X))}
 #' @param maxiter maximum number of iterations
 #' @param tol convergence tolerance
+#' @param alpha The elasticnet mixing parameter used for initialising \code{mu.init}, when \code{alpha=1} the lasso penalty is used and \code{alpha=0} the ridge penalty, values between 0 and 1 give a mixture of the two penalties.
 #' @param verbose print additional information
 #'
 #' @examples
@@ -30,28 +32,32 @@
 #' f <- svb.fit(Y, delta, X)
 #'
 #' @export
-svb.fit <- function(Y, delta, X, lambda=0.5, params=c(1, ncol(X)),
-    mu.init=NULL, s.init=NULL, g.init=NULL, maxiter=1e3, tol=1e-3, verbose=TRUE)
+svb.fit <- function(Y, delta, X, lambda=0.5, a0=1, b0=ncol(X),
+    mu.init=NULL, s.init=rep(0.05, ncol(X)), g.init=rep(0.5, ncol(X)), 
+    maxiter=1e3, tol=1e-3, alpha=1, verbose=TRUE)
 {
-
     if (!is.matrix(X)) stop("'X' must be a matrix")
     if (!(lambda > 0)) stop("'lambda' must be greater than 0")
     
     p <- ncol(X)
-    if (is.null(mu.init)) mu.init <- matrix(rnorm(p), ncol=1)
-    if (is.null(s.init)) s.init <- matrix(rep(0.2, p))
-    if (is.null(g.init)) g.init <- matrix(rep(0.5, p))
-    if (is.null(params)) params <- c(1, p)
-    if (length(params) != 2) stop("'params' takes two values.")
+    if (is.null(mu.init)) {
+	y <- survival::Surv(as.matrix(Y), as.matrix(as.numeric(delta)))
+	g <- glmnet::glmnet(X, y, family="cox", nlambda=10, alpha=alpha,
+	    standardize=FALSE)
+
+	# use the fit for the smallest value of glmnet's lambda seq
+	mu.init <- g$beta[ , ncol(g$beta)]
+    }
     
-    # re-order Y, delta, X by failure time.
+    # re-order Y, delta, X by failure time
+    # Needed as the log-likelihood is computed on the sorted data
     oY <- order(Y)
     Y <- Y[oY]
     delta <- delta[oY]
     X <- X[oY, ]
 
-    res <- fit_partial(Y, delta, X, lambda, params[1], params[2],
+    res <- fit_partial(Y, delta, X, lambda, a0, b0,
 	mu.init, s.init, g.init, maxiter, tol, verbose)
 
-    return(c(res, lambda=lambda, a0=params[1], b0=params[2]))
+    return(c(res, lambda=lambda, a0=a0, b0=b0))
 }
