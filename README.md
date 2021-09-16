@@ -2,8 +2,6 @@
 
 An R package for high dimensional survival analysis
 
----
-
 # Getting started
 
 ## Installation
@@ -17,10 +15,10 @@ devtools::install_github("mkomod/survival.svb")
 ## Example
 
 ```{R}
-n <- 200			# number of sample
-p <- 1000			# number of features
-s <- 10				# number of non-zero coefficients
-censoring_lvl <- 0.4		# degree of censoring
+n <- 200                        # number of sample
+p <- 1000                       # number of features
+s <- 10                         # number of non-zero coefficients
+censoring_lvl <- 0.4            # degree of censoring
 
 set.seed(1)
 b <- sample(c(runif(s, -2, 2), rep(0, p-s)))
