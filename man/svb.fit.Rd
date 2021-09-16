@@ -17,6 +17,7 @@ svb.fit(
   maxiter = 1000,
   tol = 0.001,
   alpha = 1,
+  center = TRUE,
   verbose = TRUE
 )
 }
@@ -45,6 +46,8 @@ svb.fit(
 
 \item{alpha}{The elasticnet mixing parameter used for initialising \code{mu.init}, when \code{alpha=1} the lasso penalty is used and \code{alpha=0} the ridge penalty, values between 0 and 1 give a mixture of the two penalties.}
 
+\item{center}{center X prior to fitting, increases numerical stability}
+
 \item{verbose}{print additional information}
 }
 \description{
@@ -52,15 +55,14 @@ Fit sparse variational Bayesian proportional hazards model.
 }
 \examples{
 n <- 200
-omega <- 1
+p <- 1000
+s <- 10
 censoring_lvl <- 0.4
 
 set.seed(1)
-b <- c(1, 1, rep(0, 348))
-p <- length(b)
+b <- sample(c(runif(s, -2, 2), rep(0, p-s)))
 X <- matrix(rnorm(n * p), nrow=n)
-y <- runif(nrow(X))
-Y <- log(1 - y) / - (exp(X \%*\% b) * omega)
+Y <- log(1 - runif(n)) / -exp(X \%*\% b)
 
 delta  <- runif(n) > censoring_lvl   # 0: censored, 1: uncensored
 Y[!delta] <- Y[!delta] * runif(sum(!delta))
