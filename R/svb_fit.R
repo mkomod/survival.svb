@@ -12,19 +12,19 @@
 #' @param maxiter maximum number of iterations
 #' @param tol convergence tolerance
 #' @param alpha The elasticnet mixing parameter used for initialising \code{mu.init}, when \code{alpha=1} the lasso penalty is used and \code{alpha=0} the ridge penalty, values between 0 and 1 give a mixture of the two penalties.
+#' @param center center X prior to fitting, increases numerical stability
 #' @param verbose print additional information
 #'
 #' @examples
 #' n <- 200
-#' omega <- 1
+#' p <- 1000
+#' s <- 10
 #' censoring_lvl <- 0.4
 #'
 #' set.seed(1)
-#' b <- c(1, 1, rep(0, 348))
-#' p <- length(b)
+#' b <- sample(c(runif(s, -2, 2), rep(0, p-s)))
 #' X <- matrix(rnorm(n * p), nrow=n)
-#' y <- runif(nrow(X))
-#' Y <- log(1 - y) / - (exp(X %*% b) * omega)
+#' Y <- log(1 - runif(n)) / -exp(X %*% b)
 #' 
 #' delta  <- runif(n) > censoring_lvl   # 0: censored, 1: uncensored
 #' Y[!delta] <- Y[!delta] * runif(sum(!delta))
@@ -34,7 +34,7 @@
 #' @export
 svb.fit <- function(Y, delta, X, lambda=0.5, a0=1, b0=ncol(X),
     mu.init=NULL, s.init=rep(0.05, ncol(X)), g.init=rep(0.5, ncol(X)), 
-    maxiter=1e3, tol=1e-3, alpha=1, verbose=TRUE)
+    maxiter=1e3, tol=1e-3, alpha=1, center=TRUE, verbose=TRUE)
 {
     if (!is.matrix(X)) stop("'X' must be a matrix")
     if (!(lambda > 0)) stop("'lambda' must be greater than 0")
@@ -49,13 +49,18 @@ svb.fit <- function(Y, delta, X, lambda=0.5, a0=1, b0=ncol(X),
 	mu.init <- g$beta[ , ncol(g$beta)]
     }
     
-    # re-order Y, delta, X by failure time
-    # Needed as the log-likelihood is computed on the sorted data
+    # re-order Y, delta and X by failure time
+    # log-likelihood computed with sorted data
     oY <- order(Y)
     Y <- Y[oY]
     delta <- delta[oY]
     X <- X[oY, ]
 
+    if (center) {
+	X <- scale(X, center=T, scale=F)
+    }
+
+    # fit the model
     res <- fit_partial(Y, delta, X, lambda, a0, b0,
 	mu.init, s.init, g.init, maxiter, tol, verbose)
 
