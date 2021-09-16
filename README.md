@@ -6,13 +6,13 @@ An R package for high dimensional survival analysis
 
 Install directly using devtools
 
-```{r}
+```R
 devtools::install_github("mkomod/survival.svb")
 ```
 
 ## Example
 
-```{r}
+```R
 n <- 200                        # number of sample
 p <- 1000                       # number of features
 s <- 10                         # number of non-zero coefficients
