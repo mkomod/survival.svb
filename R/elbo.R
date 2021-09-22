@@ -5,9 +5,10 @@
 #' @param X deisgn matrix
 #' @param fit fit model
 #' @param nrep Monte Carlo samples
+#' @param center center the design matrix
 #'
 #' @export
-elbo <- function(Y, delta, X, fit, nrep=1e4)
+elbo <- function(Y, delta, X, fit, nrep=1e4, center=TRUE)
 {
     p <- ncol(X)
     m <- fit$m
@@ -16,6 +17,9 @@ elbo <- function(Y, delta, X, fit, nrep=1e4)
     lambda <- fit$lambda
     a0 <- fit$a0
     b0 <- fit$b0
+
+    if (center)
+	X <- scale(X, center=TRUE, scale=FALSE)
 
     res.likelihood <- replicate(nrep, {
 	b. <- (runif(p) < g) * rnorm(p, m, s)
@@ -36,5 +40,5 @@ elbo <- function(Y, delta, X, fit, nrep=1e4)
     return(list(mean=m.res.likelihood - res.kl, 
 		sd=s.res.likelihood,
 		expected.likelihood=m.res.likelihood, 
-		kl.Q_Pi=res.kl))
+		kl=res.kl))
 }
