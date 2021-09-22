@@ -1,12 +1,12 @@
 Package: survival.svb
 Type: Package
-Title:
-Version: 1.0
+Title: Fit High-Dimensional Survival Models
+Version: 0.0.1
 Date: 2021-03-13
 Author: Michael Komodromos
 Maintainer: Michael Komodromos <mk1019@ic.ac.uk>
-Description: 
-License: 
+Description: Fit sparse high-dimensional Bayesian proportional hazards model using variational inference.
+License: GPL-3
 Imports: Rcpp (>= 1.0.6), glmnet, survival
 LinkingTo: Rcpp, RcppEigen
 RoxygenNote: 7.1.1
