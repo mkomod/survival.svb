@@ -1,0 +1,4 @@
+^.*\.ccls$
+^\.git$
+^tests$
+^\.gitignore$

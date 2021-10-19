@@ -1,6 +1,6 @@
 // Note: see R/src/library/stats/src/optimize.c
 
-#include "optimiser.hpp"
+#include "optimiser.h"
 
 
 double Brent_fmin(double ax, double bx, double (*f)(double, void *),

@@ -1,12 +1,12 @@
-#ifndef PARTIAL_HPP
-#define PARTIAL_HPP
+#ifndef PARTIAL_H
+#define PARTIAL_H
 
 #include <math.h>
 #include <vector>
 
 #include "RcppEigen.h"
-#include "optimiser.hpp"
-#include "utils.hpp"
+#include "optimiser.h"
+#include "utils.h"
 #include "survival.svb_types.h"
 
 

@@ -3,9 +3,9 @@
 
 #include "RcppEigen.h"
 
-#include "optimiser.hpp"
-#include "partial.hpp"
-#include "utils.hpp"
+#include "optimiser.h"
+#include "partial.h"
+#include "utils.h"
 #include "survival.svb_types.h"
 
 

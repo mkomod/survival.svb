@@ -1,5 +1,5 @@
-#ifndef _OPTIMISER_HPP
-#define _OPTIMISER_HPP
+#ifndef _OPTIMISER_H
+#define _OPTIMISER_H
 
 #include "RcppEigen.h"
 

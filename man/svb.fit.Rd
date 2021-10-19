@@ -22,38 +22,39 @@ svb.fit(
 )
 }
 \arguments{
-\item{Y}{Failure times}
+\item{Y}{Failure times.}
 
-\item{delta}{Censoring indicator, 0: censored, 1: uncensored}
+\item{delta}{Censoring indicator, 0: censored, 1: uncensored.}
 
-\item{X}{Design matrix}
+\item{X}{Design matrix.}
 
-\item{lambda}{Penalisation parameter, default: \code{lambda=0.5}}
+\item{lambda}{Penalisation parameter, default: \code{lambda=0.5}.}
 
 \item{a0}{Beta distribution parameter, default: \code{a0=1}.}
 
-\item{b0}{Beta distribution parameter, default: \code{b0=rnorm(ncol(X))}.}
+\item{b0}{Beta distribution parameter, default: \code{b0=ncol(X)}.}
 
-\item{mu.init}{Initial value for means, default taken from elasticnet fit}
+\item{mu.init}{Initial value for the means of the Gaussian component of the variational family (\eqn{\mu}), default taken from LASSO fit.}
 
-\item{s.init}{initial values for standard deviations, default: \code{rep(0.05, ncol(X))}}
+\item{s.init}{Initial value for the standard deviations of the Gaussian component of the variational family (\eqn{s}), default: \code{rep(0.05, ncol(X))}.}
 
-\item{g.init}{initial values for gamma, default: \code{rep(0.5, ncol(X))}}
+\item{g.init}{Initial value for the inclusion probability (\eqn{\gamma}), default: \code{rep(0.5, ncol(X))}.}
 
-\item{maxiter}{maximum number of iterations}
+\item{maxiter}{Maximum number of iterations, default: \code{1000}.}
 
-\item{tol}{convergence tolerance}
+\item{tol}{Convergence tolerance, default: \code{0.001}.}
 
-\item{alpha}{The elasticnet mixing parameter used for initialising \code{mu.init}, when \code{alpha=1} the lasso penalty is used and \code{alpha=0} the ridge penalty, values between 0 and 1 give a mixture of the two penalties.}
+\item{alpha}{The elastic-net mixing parameter used for initialising \code{mu.init}. When \code{alpha=1} the lasso penalty is used and \code{alpha=0} the ridge penalty, values between 0 and 1 give a mixture of the two penalties, default: \code{1}.}
 
-\item{center}{center X prior to fitting, increases numerical stability}
+\item{center}{Center X prior to fitting, increases numerical stability, default: \code{TRUE}}
 
-\item{verbose}{print additional information}
+\item{verbose}{Print additional information: default: \code{TRUE}.}
 }
 \description{
 Fit sparse variational Bayesian proportional hazards model.
 }
 \examples{
+\dontrun{
 n <- 200                        # number of sample
 p <- 1000                       # number of features
 s <- 10                         # number of non-zero coefficients
@@ -79,5 +80,5 @@ points(f$m * f$g, pch=20, col=2)
 legend("topleft", legend=c(expression(beta), expression(hat(beta))),
        pch=c(8, 20), col=c(1, 2))
 plot(f$g, main="Inclusion Probabilities", ylab=expression(gamma))
-
+}
 }

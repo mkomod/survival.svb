@@ -1,21 +1,22 @@
 #' Fit sparse variational Bayesian proportional hazards model.
 #'
-#' @param Y Failure times
-#' @param delta Censoring indicator, 0: censored, 1: uncensored
-#' @param X Design matrix
-#' @param lambda Penalisation parameter, default: \code{lambda=0.5}
+#' @param Y Failure times.
+#' @param delta Censoring indicator, 0: censored, 1: uncensored.
+#' @param X Design matrix.
+#' @param lambda Penalisation parameter, default: \code{lambda=0.5}.
 #' @param a0 Beta distribution parameter, default: \code{a0=1}.
-#' @param b0 Beta distribution parameter, default: \code{b0=rnorm(ncol(X))}.
-#' @param mu.init Initial value for means, default taken from elasticnet fit
-#' @param s.init initial values for standard deviations, default: \code{rep(0.05, ncol(X))}
-#' @param g.init initial values for gamma, default: \code{rep(0.5, ncol(X))}
-#' @param maxiter maximum number of iterations
-#' @param tol convergence tolerance
-#' @param alpha The elasticnet mixing parameter used for initialising \code{mu.init}, when \code{alpha=1} the lasso penalty is used and \code{alpha=0} the ridge penalty, values between 0 and 1 give a mixture of the two penalties.
-#' @param center center X prior to fitting, increases numerical stability
-#' @param verbose print additional information
+#' @param b0 Beta distribution parameter, default: \code{b0=ncol(X)}.
+#' @param mu.init Initial value for the means of the Gaussian component of the variational family (\eqn{\mu}), default taken from LASSO fit.
+#' @param s.init Initial value for the standard deviations of the Gaussian component of the variational family (\eqn{s}), default: \code{rep(0.05, ncol(X))}.
+#' @param g.init Initial value for the inclusion probability (\eqn{\gamma}), default: \code{rep(0.5, ncol(X))}.
+#' @param maxiter Maximum number of iterations, default: \code{1000}.
+#' @param tol Convergence tolerance, default: \code{0.001}.
+#' @param alpha The elastic-net mixing parameter used for initialising \code{mu.init}. When \code{alpha=1} the lasso penalty is used and \code{alpha=0} the ridge penalty, values between 0 and 1 give a mixture of the two penalties, default: \code{1}.
+#' @param center Center X prior to fitting, increases numerical stability, default: \code{TRUE}
+#' @param verbose Print additional information: default: \code{TRUE}.
 #'
 #' @examples
+#' \dontrun{
 #' n <- 200                        # number of sample
 #' p <- 1000                       # number of features
 #' s <- 10                         # number of non-zero coefficients
@@ -41,7 +42,7 @@
 #' legend("topleft", legend=c(expression(beta), expression(hat(beta))),
 #'        pch=c(8, 20), col=c(1, 2))
 #' plot(f$g, main="Inclusion Probabilities", ylab=expression(gamma))
-#'
+#' }
 #' @export
 svb.fit <- function(Y, delta, X, lambda=0.5, a0=1, b0=ncol(X),
     mu.init=NULL, s.init=rep(0.05, ncol(X)), g.init=rep(0.5, ncol(X)), 
@@ -75,5 +76,5 @@ svb.fit <- function(Y, delta, X, lambda=0.5, a0=1, b0=ncol(X),
     res <- fit_partial(Y, delta, X, lambda, a0, b0,
 	mu.init, s.init, g.init, maxiter, tol, verbose)
 
-    return(c(res, lambda=lambda, a0=a0, b0=b0))
+    return(c(res, beta_hat=res$m * res$g, lambda=lambda, a0=a0, b0=b0))
 }

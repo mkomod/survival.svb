@@ -1,4 +1,5 @@
 importFrom(Rcpp, sourceCpp)
+importFrom("stats", "pnorm", "rnorm", "runif", "sd")
 useDynLib(survival.svb, .registration=TRUE)
 export(svb.fit)
 export(elbo)

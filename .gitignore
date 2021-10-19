@@ -1,4 +1,7 @@
 *.o
 *.so
 *.ccls
-testing.R
+tests/
+survival.svb.Rcheck/
+..Rcheck/
+*.tar.gz
