@@ -9,7 +9,7 @@ Description: Variable selection in a high dimensional setting is
     becoming a task of key importance, particularly in the biomedical 
     sciences where data is often high-dimensional. This package 
     implements methodology designed to performs variable selection in 
-    a high-dimensional settings, whilst also providing mechasims for 
+    a high-dimensional settings, whilst also providing mechanisms for 
     uncertainty quantification and effect estimations. Broadly, we 
     use a spike-and-slab prior with Laplace slab and Dirac spike and 
     seek to approximate the corresponding posterior using variational 
