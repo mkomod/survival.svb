@@ -35,7 +35,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // pm
-double pm(double mu, double sigma, const vec& P, const vec& x_j, const std::vector<uint>& delta_ord);
+double pm(double mu, double sigma, const vec& P, const vec& x_j, const std::vector<unsigned int>& delta_ord);
 RcppExport SEXP _survival_svb_pm(SEXP muSEXP, SEXP sigmaSEXP, SEXP PSEXP, SEXP x_jSEXP, SEXP delta_ordSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -44,13 +44,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
     Rcpp::traits::input_parameter< const vec& >::type P(PSEXP);
     Rcpp::traits::input_parameter< const vec& >::type x_j(x_jSEXP);
-    Rcpp::traits::input_parameter< const std::vector<uint>& >::type delta_ord(delta_ordSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int>& >::type delta_ord(delta_ordSEXP);
     rcpp_result_gen = Rcpp::wrap(pm(mu, sigma, P, x_j, delta_ord));
     return rcpp_result_gen;
 END_RCPP
 }
 // opt_par_mu
-double opt_par_mu(double mu, double sigma, double lambda, const vec& P, const vec& x_j, const std::vector<uint>& delta_ord);
+double opt_par_mu(double mu, double sigma, double lambda, const vec& P, const vec& x_j, const std::vector<unsigned int>& delta_ord);
 RcppExport SEXP _survival_svb_opt_par_mu(SEXP muSEXP, SEXP sigmaSEXP, SEXP lambdaSEXP, SEXP PSEXP, SEXP x_jSEXP, SEXP delta_ordSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -60,13 +60,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
     Rcpp::traits::input_parameter< const vec& >::type P(PSEXP);
     Rcpp::traits::input_parameter< const vec& >::type x_j(x_jSEXP);
-    Rcpp::traits::input_parameter< const std::vector<uint>& >::type delta_ord(delta_ordSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int>& >::type delta_ord(delta_ordSEXP);
     rcpp_result_gen = Rcpp::wrap(opt_par_mu(mu, sigma, lambda, P, x_j, delta_ord));
     return rcpp_result_gen;
 END_RCPP
 }
 // opt_par_sig
-double opt_par_sig(double sigma, double mu, double lambda, const vec& P, const vec& x_j, const std::vector<uint>& delta_ord);
+double opt_par_sig(double sigma, double mu, double lambda, const vec& P, const vec& x_j, const std::vector<unsigned int>& delta_ord);
 RcppExport SEXP _survival_svb_opt_par_sig(SEXP sigmaSEXP, SEXP muSEXP, SEXP lambdaSEXP, SEXP PSEXP, SEXP x_jSEXP, SEXP delta_ordSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -76,13 +76,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
     Rcpp::traits::input_parameter< const vec& >::type P(PSEXP);
     Rcpp::traits::input_parameter< const vec& >::type x_j(x_jSEXP);
-    Rcpp::traits::input_parameter< const std::vector<uint>& >::type delta_ord(delta_ordSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int>& >::type delta_ord(delta_ordSEXP);
     rcpp_result_gen = Rcpp::wrap(opt_par_sig(sigma, mu, lambda, P, x_j, delta_ord));
     return rcpp_result_gen;
 END_RCPP
 }
 // opt_par_gam
-double opt_par_gam(double mu, double sigma, double lambda, double a_0, double b_0, const vec& P, const vec& x_j, const std::vector<uint>& delta_ord);
+double opt_par_gam(double mu, double sigma, double lambda, double a_0, double b_0, const vec& P, const vec& x_j, const std::vector<unsigned int>& delta_ord);
 RcppExport SEXP _survival_svb_opt_par_gam(SEXP muSEXP, SEXP sigmaSEXP, SEXP lambdaSEXP, SEXP a_0SEXP, SEXP b_0SEXP, SEXP PSEXP, SEXP x_jSEXP, SEXP delta_ordSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -94,7 +94,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type b_0(b_0SEXP);
     Rcpp::traits::input_parameter< const vec& >::type P(PSEXP);
     Rcpp::traits::input_parameter< const vec& >::type x_j(x_jSEXP);
-    Rcpp::traits::input_parameter< const std::vector<uint>& >::type delta_ord(delta_ordSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int>& >::type delta_ord(delta_ordSEXP);
     rcpp_result_gen = Rcpp::wrap(opt_par_gam(mu, sigma, lambda, a_0, b_0, P, x_j, delta_ord));
     return rcpp_result_gen;
 END_RCPP
@@ -151,7 +151,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // order_T
-std::vector<uint> order_T(const vec& T);
+std::vector<unsigned int> order_T(const vec& T);
 RcppExport SEXP _survival_svb_order_T(SEXP TSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -162,7 +162,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // order_delta
-std::vector<uint> order_delta(const vec& T, const vec& delta);
+std::vector<unsigned int> order_delta(const vec& T, const vec& delta);
 RcppExport SEXP _survival_svb_order_delta(SEXP TSEXP, SEXP deltaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

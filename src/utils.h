@@ -16,8 +16,8 @@ void add_log_P(vec &P, const vec &x_j, double m, double s, double g);
 
 // misc
 double sigmoid(double x);
-std::vector<uint> order_T(const vec &T);
-std::vector<uint> order_delta(const vec &T, const vec &delta);
+std::vector<unsigned int> order_T(const vec &T);
+std::vector<unsigned int> order_delta(const vec &T, const vec &delta);
 double log_likelihood(const vec &T, const vec &delta, const mat &X, const vec &b);
 
 

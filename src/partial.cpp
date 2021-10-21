@@ -7,26 +7,26 @@ struct kwargs {
     double lambda; 
     const vec &P;
     const vec &x_j;
-    const std::vector<uint> &delta_ord;
+    const std::vector<unsigned int> &delta_ord;
 };
 
 
 // [[Rcpp::export]]
 double pm(double mu, double sigma, const vec &P, const vec &x_j,
-	const std::vector<uint> &delta_ord) 
+	const std::vector<unsigned int> &delta_ord) 
 {
     double s = 0.0;
     double t = 0.0;
     double a = 0.0;
 
     a = (P + log_normal_mgf(x_j, mu, sigma)).maxCoeff();
-    uint icf = 0;		// index of current failure
-    uint ilf = x_j.rows();	// index of last failure
+    unsigned int icf = 0;		// index of current failure
+    unsigned int ilf = x_j.rows();	// index of last failure
 
     for (int i = delta_ord.size() - 1; i >= 0; --i) {
 	icf = delta_ord.at(i);
 
-	for (uint j = icf; j <= ilf - 1; ++j)
+	for (unsigned int j = icf; j <= ilf - 1; ++j)
 	    s += exp(P(j) + log_normal_mgf(x_j(j), mu, sigma) - a);
 	
 	t += a + log(s) - mu * x_j(icf);
@@ -45,7 +45,7 @@ static double f_par_mu(double mu, void* args)
     double lambda = arg->lambda;
     const vec &P = arg->P;
     const vec &x_j = arg->x_j;
-    const std::vector<uint> &delta_ord = arg->delta_ord;
+    const std::vector<unsigned int> &delta_ord = arg->delta_ord;
 
     double t = pm(mu, sigma, P, x_j, delta_ord);
 
@@ -64,7 +64,7 @@ static double f_par_sig(double sigma, void* args)
     double lambda = arg->lambda;
     const vec &P = arg->P;
     const vec &x_j = arg->x_j;
-    const std::vector<uint> &delta_ord = arg->delta_ord;
+    const std::vector<unsigned int> &delta_ord = arg->delta_ord;
     
     double t = pm(mu, sigma, P, x_j, delta_ord);
 
@@ -79,7 +79,7 @@ static double f_par_sig(double sigma, void* args)
 
 // [[Rcpp::export]]
 double opt_par_mu(double mu, double sigma, double lambda, const vec &P, const vec &x_j,
-	const std::vector<uint> &delta_ord)
+	const std::vector<unsigned int> &delta_ord)
 {
     kwargs args = { mu, sigma, lambda, P, x_j, delta_ord };
     double res = Brent_fmin(mu-2.0*abs(mu)-0.5, mu+2.0*abs(mu)+0.5, 
@@ -90,7 +90,7 @@ double opt_par_mu(double mu, double sigma, double lambda, const vec &P, const ve
 
 // [[Rcpp::export]]
 double opt_par_sig(double sigma, double mu, double lambda, const vec &P, const vec &x_j,
-	const std::vector<uint> &delta_ord)
+	const std::vector<unsigned int> &delta_ord)
 {
     kwargs args = { mu, sigma, lambda, P, x_j, delta_ord };
     double res = Brent_fmin(1e-4, 2.0*sigma, f_par_sig, static_cast<void *>(&args), 1e-5);
@@ -100,7 +100,7 @@ double opt_par_sig(double sigma, double mu, double lambda, const vec &P, const v
 
 // [[Rcpp::export]]
 double opt_par_gam(double mu, double sigma, double lambda, double a_0, double b_0,
-    const vec &P, const vec &x_j, const std::vector<uint> &delta_ord)
+    const vec &P, const vec &x_j, const std::vector<unsigned int> &delta_ord)
 {
     double t = 0.0; 
     double s = 0.0; 
@@ -110,13 +110,13 @@ double opt_par_gam(double mu, double sigma, double lambda, double a_0, double b_
 
     a = std::min((P + log_normal_mgf(x_j, mu, sigma)).maxCoeff() / 5.0, 175.0);
     b = std::min(P.maxCoeff() / 5.0, 175.0);
-    uint icf = 0;
-    uint ilf = x_j.rows();
+    unsigned int icf = 0;
+    unsigned int ilf = x_j.rows();
 
     for (int i = delta_ord.size() - 1; i >= 0; --i) {
 	icf = delta_ord.at(i);
 
-	for (uint j = icf; j <= ilf - 1; ++j) {
+	for (unsigned int j = icf; j <= ilf - 1; ++j) {
 	    s += exp(P(j) + log_normal_mgf(x_j(j), mu, sigma) - a);
 	    p += exp(P(j) - b);
 	}

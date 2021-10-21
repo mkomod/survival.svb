@@ -11,12 +11,12 @@
 
 
 double opt_par_mu(double mu, double sigma, double lambda, const vec &P, const vec &x_j,
-    const std::vector<uint> &order_delta);
+    const std::vector<unsigned int> &order_delta);
 
 double opt_par_sig(double sigma, double mu, double lambda, const vec &P, const vec &x_j,
-    const std::vector<uint> &order_delta);
+    const std::vector<unsigned int> &order_delta);
 
 double opt_par_gam(double mu, double sigma, double lambda, double a_0, double b_0,
-    const vec &P, const vec &x_j, const std::vector<uint> &order_delta);
+    const vec &P, const vec &x_j, const std::vector<unsigned int> &order_delta);
 
 #endif

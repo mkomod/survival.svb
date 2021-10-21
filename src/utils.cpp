@@ -54,14 +54,14 @@ static double P_ij(double x_ij,  double m, double s, double g)
 // [[Rcpp::export]]
 vec init_log_P(const mat &X, const vec &m, const vec &s, const vec &g)
 {
-    uint n = X.rows();
-    uint p = X.cols();
+    unsigned int n = X.rows();
+    unsigned int p = X.cols();
     vec P = vec::Zero(n);
 
     double x = 0.0;
 
-    for (uint i = 0; i < n; ++i) {
-	for (uint j = 0; j < p; ++j)  {
+    for (unsigned int i = 0; i < n; ++i) {
+	for (unsigned int j = 0; j < p; ++j)  {
 	    P(i) += P_ij(X(i, j), m(j), s(j), g(j));
 	}
     }
@@ -72,7 +72,7 @@ vec init_log_P(const mat &X, const vec &m, const vec &s, const vec &g)
 
 void rm_log_P(vec &P, const vec &x_j, double m, double s, double g)
 {
-    for (uint i = 0; i < x_j.rows(); ++i)  {
+    for (unsigned int i = 0; i < x_j.rows(); ++i)  {
 	P(i) -= P_ij(x_j(i), m, s, g);
     }
 }
@@ -80,7 +80,7 @@ void rm_log_P(vec &P, const vec &x_j, double m, double s, double g)
 
 void add_log_P(vec &P, const vec &x_j, double m, double s, double g)
 {
-    for (uint i = 0; i < x_j.rows(); ++i)  {
+    for (unsigned int i = 0; i < x_j.rows(); ++i)  {
 	P(i) += P_ij(x_j(i), m, s, g);
     }
 }
@@ -88,14 +88,14 @@ void add_log_P(vec &P, const vec &x_j, double m, double s, double g)
 
 // order the failure times
 // [[Rcpp::export]]
-std::vector<uint> order_T(const vec &T)
+std::vector<unsigned int> order_T(const vec &T)
 {
     // order(T)
-    std::vector<uint> T_ord(T.size());
+    std::vector<unsigned int> T_ord(T.size());
     std::iota(T_ord.begin(), T_ord.end(), 0);
 
     std::stable_sort(T_ord.begin(), T_ord.end(),
-	    [&T](uint i1, uint i2) {return T[i1] < T[i2];});
+	    [&T](unsigned int i1, unsigned int i2) {return T[i1] < T[i2];});
  
     return T_ord;
 }
@@ -103,12 +103,12 @@ std::vector<uint> order_T(const vec &T)
 
 // get the index where failures occured for sorted T (times)
 // [[Rcpp::export]]
-std::vector<uint> order_delta(const vec &T, const vec &delta) 
+std::vector<unsigned int> order_delta(const vec &T, const vec &delta) 
 {
-    std::vector<uint> T_ord = order_T(T);
-    std::vector<uint> delta_ord;
+    std::vector<unsigned int> T_ord = order_T(T);
+    std::vector<unsigned int> delta_ord;
 
-    for (uint i = 0; i < T_ord.size(); ++i)
+    for (unsigned int i = 0; i < T_ord.size(); ++i)
 	if (delta(T_ord.at(i)) == 1) delta_ord.push_back(i);
 
     return delta_ord;
@@ -119,8 +119,8 @@ std::vector<uint> order_delta(const vec &T, const vec &delta)
 // [[Rcpp::export]]
 double log_likelihood(const vec &T, const vec &delta, const mat &X, const vec &b)
 {
-    std::vector<uint> T_ord = order_T(T);
-    std::vector<uint> delta_ord = order_delta(T, delta);
+    std::vector<unsigned int> T_ord = order_T(T);
+    std::vector<unsigned int> delta_ord = order_delta(T, delta);
 
     vec xb = X * b;
     double a = xb.maxCoeff();		// prevent overflow

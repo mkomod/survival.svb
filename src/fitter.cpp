@@ -13,9 +13,9 @@
 Rcpp::List fit_partial(vec T, vec delta, mat X, double lambda, double a_0,
     double b_0, vec m, vec s, vec g, int maxiter, double tol, bool verbose)
 {
-    uint p = X.cols();
+    unsigned int p = X.cols();
 
-    std::vector<uint> delta_ord = order_delta(T, delta);
+    std::vector<unsigned int> delta_ord = order_delta(T, delta);
 
     // initialisations
     vec m_old, s_old, g_old;
@@ -25,7 +25,7 @@ Rcpp::List fit_partial(vec T, vec delta, mat X, double lambda, double a_0,
 
 	m_old = m; s_old = s; g_old = g;
 
-	for (uint j = 0; j < p; ++j) {
+	for (unsigned int j = 0; j < p; ++j) {
 	    vec x_j = X.col(j);
 
 	    rm_log_P(P, x_j, m(j), s(j), g(j));
