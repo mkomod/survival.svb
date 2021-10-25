@@ -80,10 +80,10 @@
 #' 
 #' # plot the results
 #' plot(b, xlab=expression(beta), main="Coefficient value", pch=8, ylim=c(-2,2))
-#' points(f$m * f$g, pch=20, col=2)
+#' points(f$beta_hat, pch=20, col=2)
 #' legend("topleft", legend=c(expression(beta), expression(hat(beta))),
 #'        pch=c(8, 20), col=c(1, 2))
-#' plot(f$g, main="Inclusion Probabilities", ylab=expression(gamma))
+#' plot(f$inclusion_prob, main="Inclusion Probabilities", ylab=expression(gamma))
 #'
 #' @export
 svb.fit <- function(Y, delta, X, lambda=0.5, a0=1, b0=ncol(X),
@@ -117,7 +117,11 @@ svb.fit <- function(Y, delta, X, lambda=0.5, a0=1, b0=ncol(X),
     # fit the model
     res <- fit_partial(Y, delta, X, lambda, a0, b0,
 	mu.init, s.init, g.init, maxiter, tol, verbose)
+    res$lambda <- lambda
+    res$a0 <- a0
+    res$b0 <- b0
+    res$beta_hat <- res$m * res$g
+    res$inclusion_prob <- res$g
 
-    return(c(res, beta_hat=res$m * res$g, inclusion_prob=res$g, 
-	     lambda=lambda, a0=a0, b0=b0))
+    return(res)
 }

@@ -105,9 +105,9 @@ f <- survival.svb::svb.fit(Y, delta, X)
 
 # plot the results
 plot(b, xlab=expression(beta), main="Coefficient value", pch=8, ylim=c(-2,2))
-points(f$m * f$g, pch=20, col=2)
+points(f$beta_hat, pch=20, col=2)
 legend("topleft", legend=c(expression(beta), expression(hat(beta))),
        pch=c(8, 20), col=c(1, 2))
-plot(f$g, main="Inclusion Probabilities", ylab=expression(gamma))
+plot(f$inclusion_prob, main="Inclusion Probabilities", ylab=expression(gamma))
 
 }
