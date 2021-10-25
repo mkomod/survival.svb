@@ -35,7 +35,7 @@ Compute the evidence lower bound (ELBO)
 The evidence lower bound (ELBO) is a popular goodness of fit measure
 used in variational inference. Under the variational posterior the
 ELBO is given as
-\deqn{\text{ELBO} = E_{\tilde{\Pi}}[\log L_p(\beta; Y, X, \delta)] - \text{KL}(\tilde{\Pi} \| \Pi)}
+\deqn{ELBO = E_{\tilde{\Pi}}[\log L_p(\beta; Y, X, \delta)] - KL(\tilde{\Pi} \| \Pi)}
 where \eqn{\tilde{\Pi}} is the variational posterior, \eqn{\Pi} is the prior,
 \eqn{L_p(\beta; Y, X, delta)} is Cox's partial likelihood. Intuitively,
 within the ELBO we incur a trade-off between how well we fit to the data

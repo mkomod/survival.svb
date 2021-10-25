@@ -20,6 +20,7 @@ License: GPL-3
 Depends: R (>= 4.0.0)
 Imports: Rcpp (>= 1.0.6), glmnet, survival
 LinkingTo: Rcpp, RcppEigen
+NeedsCompilation: yes
 URL: https://github.com/mkomod/survival.svb
 BugReports: https://github.com/mkomod/survival.svb/issues
 RoxygenNote: 7.1.1

@@ -25,11 +25,10 @@
 #'
 #' @return Returns a list containing: \cr
 #' \item{beta_hat}{Point estimate for the coefficients \eqn{\beta}, taken as 
-#' the mean under the variational approximation 
+#' the mean under the variational approximation.
 #' \eqn{\hat{\beta}_j = E_{\tilde{\Pi}} [ \beta_j ] = \gamma_j \mu_j}.}
 #' \item{inclusion_prob}{Posterior inclusion probabilities. Used to describe
 #' the posterior probability a coefficient is non-zero.}
-#' \eqn{\hat{\beta}_j = E_{\tilde{\Pi}} [ \beta_j ] = \gamma_j \mu_j}.}
 #' \item{m}{Final value for the means of the Gaussian component of the variational 
 #' family \eqn{\mu}.}
 #' \item{s}{Final value for the standard deviation of the Gaussian component of 
@@ -53,7 +52,7 @@
 #' at zero and \eqn{p} the number of coefficients.\cr \cr The components of the
 #' variational family (\eqn{\mu, s, \gamma}) are then optimised by minimizing the 
 #' Kullback-Leibler divergence between the variational family and the posterior,
-#' \deqn{\tilde{\Pi} = \arg \min \text{KL}(Q \| \Pi).} We use co-ordinate ascent
+#' \deqn{\tilde{\Pi} = \arg \min KL(Q \| \Pi).} We use co-ordinate ascent
 #' variational inference (CAVI) to solve the above optimisation problem. \cr \cr
 #' 
 #'
