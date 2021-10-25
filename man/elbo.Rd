@@ -2,23 +2,45 @@
 % Please edit documentation in R/elbo.R
 \name{elbo}
 \alias{elbo}
-\title{Compute the evidence lower bound (ELBO) for the Cox model}
+\title{Compute the evidence lower bound (ELBO)}
 \usage{
 elbo(Y, delta, X, fit, nrep = 10000, center = TRUE)
 }
 \arguments{
-\item{Y}{failure times}
+\item{Y}{Failure times.}
 
-\item{delta}{censoring indicator}
+\item{delta}{Censoring indicator, 0: censored, 1: uncensored.}
 
-\item{X}{deisgn matrix}
+\item{X}{Design matrix.}
 
-\item{fit}{fit model}
+\item{fit}{Fit model.}
 
-\item{nrep}{Monte Carlo samples}
+\item{nrep}{Number of Monte Carlo samples.}
 
-\item{center}{center the design matrix}
+\item{center}{Should the design matrix be centered.}
+}
+\value{
+Returns a list containing: \cr
+\item{mean}{The mean of the ELBO.}
+\item{sd}{The standard-deviation of the ELBO.}
+\item{expected.likelihood}{The expectation of the likelihood
+under the variational posterior.}
+\item{kl}{The KL between the variational posterior and prior.}
 }
 \description{
-Compute the evidence lower bound (ELBO) for the Cox model
+Compute the evidence lower bound (ELBO)
 }
+\section{Details}{
+
+The evidence lower bound (ELBO) is a popular goodness of fit measure
+used in variational inference. Under the variational posterior the
+ELBO is given as
+\deqn{\text{ELBO} = E_{\tilde{\Pi}}[\log L_p(\beta; Y, X, \delta)] - \text{KL}(\tilde{\Pi} \| \Pi)}
+where \eqn{\tilde{\Pi}} is the variational posterior, \eqn{\Pi} is the prior,
+\eqn{L_p(\beta; Y, X, delta)} is Cox's partial likelihood. Intuitively,
+within the ELBO we incur a trade-off between how well we fit to the data
+(through the expectation of the log-partial-likelihood) and how close we
+are to our prior (in terms of KL divergence). Ideally we want the ELBO to be 
+as small as possible.
+}
+

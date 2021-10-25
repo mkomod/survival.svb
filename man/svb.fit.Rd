@@ -2,7 +2,7 @@
 % Please edit documentation in R/svb_fit.R
 \name{svb.fit}
 \alias{svb.fit}
-\title{Fit sparse variational Bayesian proportional hazards model.}
+\title{Fit sparse variational Bayesian proportional hazards models.}
 \usage{
 svb.fit(
   Y,
@@ -34,29 +34,58 @@ svb.fit(
 
 \item{b0}{Beta distribution parameter, default: \code{b0=ncol(X)}.}
 
-\item{mu.init}{Initial value for the means of the Gaussian component of the variational family (\eqn{\mu}), default taken from LASSO fit.}
+\item{mu.init}{Initial value for the mean of the Gaussian component of 
+the variational family (\eqn{\mu}), default taken from LASSO fit.}
 
-\item{s.init}{Initial value for the standard deviations of the Gaussian component of the variational family (\eqn{s}), default: \code{rep(0.05, ncol(X))}.}
+\item{s.init}{Initial value for the standard deviations of the Gaussian 
+component of the variational family (\eqn{s}), default: 
+\code{rep(0.05, ncol(X))}.}
 
-\item{g.init}{Initial value for the inclusion probability (\eqn{\gamma}), default: \code{rep(0.5, ncol(X))}.}
+\item{g.init}{Initial value for the inclusion probability (\eqn{\gamma}), 
+default: \code{rep(0.5, ncol(X))}.}
 
 \item{maxiter}{Maximum number of iterations, default: \code{1000}.}
 
 \item{tol}{Convergence tolerance, default: \code{0.001}.}
 
-\item{alpha}{The elastic-net mixing parameter used for initialising \code{mu.init}. When \code{alpha=1} the lasso penalty is used and \code{alpha=0} the ridge penalty, values between 0 and 1 give a mixture of the two penalties, default: \code{1}.}
+\item{alpha}{The elastic-net mixing parameter used for initialising \code{mu.init}. 
+When \code{alpha=1} the lasso penalty is used and \code{alpha=0} the ridge 
+penalty, values between 0 and 1 give a mixture of the two penalties, default:
+\code{1}.}
 
-\item{center}{Center X prior to fitting, increases numerical stability, default: \code{TRUE}}
+\item{center}{Center X prior to fitting, increases numerical stability, 
+default: \code{TRUE}}
 
 \item{verbose}{Print additional information: default: \code{TRUE}.}
 }
-\description{
-Fit sparse variational Bayesian proportional hazards model.
+\value{
+
 }
+\description{
+Fit sparse variational Bayesian proportional hazards models.
+}
+\section{Details}{
+
+Rather than compute the posterior using MCMC, we turn to approximating it
+using variational inference. Within variational inference we re-cast
+Bayesian inference as an optimisation problem, where we minimize the 
+Kullback-Leibler (KL) divergence between a family of tractable distributions 
+and the posterior, \eqn{\Pi}. \cr \cr In our case we use a mean-field variational 
+family,
+\deqn{Q = \{ \prod_{j=1}^p \gamma_j N(\mu_j, s_j^2) + (1 - \gamma_j) \delta_0 \}}
+where \eqn{\mu_j} is the mean and \eqn{s_j} the std. dev for the Gaussian 
+component, \eqn{\gamma_j} the inclusion probabilities, \eqn{\delta_0} a Dirac mass 
+at zero and \eqn{p} the number of coefficients.\cr \cr The components of the
+variational family (\eqn{\mu, s, \gamma}) are then optimised by minimizing the 
+Kullback-Leibler divergence between the variational family and the posterior,
+\deqn{\tilde{\Pi} = \arg \min \text{KL}(Q \| \Pi).} We use co-ordinate ascent
+variational inference (CAVI) to solve the above optimisation problem. \cr \cr
+}
+
 \examples{
-\dontrun{
+
 n <- 200                        # number of sample
-p <- 1000                       # number of features
+p <- 500                        # number of features
 s <- 10                         # number of non-zero coefficients
 censoring_lvl <- 0.4            # degree of censoring
 
@@ -80,5 +109,5 @@ points(f$m * f$g, pch=20, col=2)
 legend("topleft", legend=c(expression(beta), expression(hat(beta))),
        pch=c(8, 20), col=c(1, 2))
 plot(f$g, main="Inclusion Probabilities", ylab=expression(gamma))
-}
+
 }
