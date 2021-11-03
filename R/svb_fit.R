@@ -57,9 +57,28 @@
 #' 
 #'
 #' @examples
-#'
-#' n <- 200                        # number of sample
-#' p <- 500                        # number of features
+#' n <- 125                        # number of sample
+#' p <- 250                        # number of features
+#' s <- 5                          # number of non-zero coefficients
+#' censoring_lvl <- 0.25           # degree of censoring
+#' 
+#' 
+#' # generate some test data
+#' set.seed(1)
+#' b <- sample(c(runif(s, -2, 2), rep(0, p-s)))
+#' X <- matrix(rnorm(n * p), nrow=n)
+#' Y <- log(1 - runif(n)) / -exp(X %*% b)
+#' delta  <- runif(n) > censoring_lvl   		# 0: censored, 1: uncensored
+#' Y[!delta] <- Y[!delta] * runif(sum(!delta))	# rescale censored data
+#' 
+#' 
+#' # fit the model
+#' f <- survival.svb::svb.fit(Y, delta, X, mu.init=rep(0, p))
+#' 
+#' \donttest{
+#' ## Larger Example
+#' n <- 250                        # number of sample
+#' p <- 1000                       # number of features
 #' s <- 10                         # number of non-zero coefficients
 #' censoring_lvl <- 0.4            # degree of censoring
 #' 
@@ -83,7 +102,7 @@
 #' legend("topleft", legend=c(expression(beta), expression(hat(beta))),
 #'        pch=c(8, 20), col=c(1, 2))
 #' plot(f$inclusion_prob, main="Inclusion Probabilities", ylab=expression(gamma))
-#'
+#' }
 #' @export
 svb.fit <- function(Y, delta, X, lambda=0.5, a0=1, b0=ncol(X),
     mu.init=NULL, s.init=rep(0.05, ncol(X)), g.init=rep(0.5, ncol(X)), 
