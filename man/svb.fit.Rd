@@ -8,7 +8,7 @@ svb.fit(
   Y,
   delta,
   X,
-  lambda = 0.5,
+  lambda = 1,
   a0 = 1,
   b0 = ncol(X),
   mu.init = NULL,
@@ -28,7 +28,7 @@ svb.fit(
 
 \item{X}{Design matrix.}
 
-\item{lambda}{Penalisation parameter, default: \code{lambda=0.5}.}
+\item{lambda}{Penalisation parameter, default: \code{lambda=1}.}
 
 \item{a0}{Beta distribution parameter, default: \code{a0=1}.}
 

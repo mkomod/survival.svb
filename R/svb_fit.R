@@ -3,7 +3,7 @@
 #' @param Y Failure times.
 #' @param delta Censoring indicator, 0: censored, 1: uncensored.
 #' @param X Design matrix.
-#' @param lambda Penalisation parameter, default: \code{lambda=0.5}.
+#' @param lambda Penalisation parameter, default: \code{lambda=1}.
 #' @param a0 Beta distribution parameter, default: \code{a0=1}.
 #' @param b0 Beta distribution parameter, default: \code{b0=ncol(X)}.
 #' @param mu.init Initial value for the mean of the Gaussian component of 
@@ -104,7 +104,7 @@
 #' plot(f$inclusion_prob, main="Inclusion Probabilities", ylab=expression(gamma))
 #' }
 #' @export
-svb.fit <- function(Y, delta, X, lambda=0.5, a0=1, b0=ncol(X),
+svb.fit <- function(Y, delta, X, lambda=1, a0=1, b0=ncol(X),
     mu.init=NULL, s.init=rep(0.05, ncol(X)), g.init=rep(0.5, ncol(X)), 
     maxiter=1e3, tol=1e-3, alpha=1, center=TRUE, verbose=TRUE)
 {
