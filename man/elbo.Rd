@@ -37,7 +37,7 @@ used in variational inference. Under the variational posterior the
 ELBO is given as
 \deqn{ELBO = E_{\tilde{\Pi}}[\log L_p(\beta; Y, X, \delta)] - KL(\tilde{\Pi} \| \Pi)}
 where \eqn{\tilde{\Pi}} is the variational posterior, \eqn{\Pi} is the prior,
-\eqn{L_p(\beta; Y, X, delta)} is Cox's partial likelihood. Intuitively,
+\eqn{L_p(\beta; Y, X, \delta)} is Cox's partial likelihood. Intuitively,
 within the ELBO we incur a trade-off between how well we fit to the data
 (through the expectation of the log-partial-likelihood) and how close we
 are to our prior (in terms of KL divergence). Ideally we want the ELBO to be 

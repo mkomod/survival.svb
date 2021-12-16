@@ -2,20 +2,21 @@ Package: survival.svb
 Type: Package
 Title: Fit High-Dimensional Proportional Hazards Models 
 Version: 0.0-1
-Date: 2021-10-19
+Date: 2021-12-14
 Author: Michael Komodromos
 Maintainer: Michael Komodromos <mk1019@ic.ac.uk>
-Description: Variable selection in a high dimensional setting is 
-    becoming a task of key importance, particularly in the biomedical 
-    sciences where data is often high-dimensional. This package 
-    implements methodology designed to performs variable selection in 
-    a high-dimensional settings, whilst also providing mechanisms for 
-    uncertainty quantification and effect estimations. Broadly, we 
-    use a spike-and-slab prior with Laplace slab and Dirac spike and 
-    seek to approximate the corresponding posterior using variational 
-    inference. Our variational approximation thereby provides posterior 
-    inclusion probabilities, point estimates for the effect sizes and
-    uncertainty quantification for the effect sizes.
+Description: Variable selection in high dimensional settings is 
+    a task of key importance, particularly in the biomedical sciences. 
+    This package implements methodology designed to perform:
+    (i) variable selection, (ii) effect estimation, and (iii) uncertainty
+    quantification, for high-dimensional survival data. Broadly, our 
+    method uses a spike-and-slab prior with Laplace slab and Dirac spike 
+    and approximates the corresponding posterior using variational 
+    inference, a popular method in machine learning for scalable conditional
+    inference. Although approximate, the variational posterior provides
+    excellent point estimates and good control of the false discovery rate.
+    The uncertainty quantification is not as good as MCMC, however compute
+    times are orders of magintude faster.
 License: GPL-3
 Depends: R (>= 4.0.0)
 Imports: Rcpp (>= 1.0.6), glmnet, survival
