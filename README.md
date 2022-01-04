@@ -4,11 +4,18 @@ An R package for high dimensional survival analysis
 
 ## Installation
 
-Install directly using devtools
+Install directly from CRAN
+
+```R
+install.packages("survival.svb")
+```
+
+or using devtools
 
 ```R
 devtools::install_github("mkomod/survival.svb")
 ```
+
 
 ## Example
 
@@ -39,3 +46,6 @@ legend("topleft", legend=c(expression(beta), expression(hat(beta))),
        pch=c(8, 20), col=c(1, 2))
 ```
 
+## Resources
+
+https://arxiv.org/abs/2112.10270
