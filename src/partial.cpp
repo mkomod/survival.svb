@@ -50,7 +50,7 @@ static double f_par_mu(double mu, void* args)
     double t = pm(mu, sigma, P, x_j, delta_ord);
 
     double res = t +
-	lambda * sigma * sqrt(2.0/PI) * exp(-pow(mu/sigma, 2.0) * 0.5) +
+	lambda * sigma * sqrt(2.0/M_PI) * exp(-pow(mu/sigma, 2.0) * 0.5) +
 	lambda * mu * (1.0 - 2.0 * R::pnorm(- mu/sigma, 0, 1, 1, 0));
 
     return res;
@@ -69,7 +69,7 @@ static double f_par_sig(double sigma, void* args)
     double t = pm(mu, sigma, P, x_j, delta_ord);
 
     double res = t +
-	lambda * sigma * sqrt(2.0/PI) * exp(-pow(mu/sigma, 2.0) * 0.5) +
+	lambda * sigma * sqrt(2.0/M_PI) * exp(-pow(mu/sigma, 2.0) * 0.5) +
 	lambda * mu * (1.0 - 2.0 * R::pnorm(- mu/sigma, 0, 1, 1, 0)) -
 	log(sigma);
 
@@ -127,9 +127,9 @@ double opt_par_gam(double mu, double sigma, double lambda, double a_0, double b_
     }
 
     double res = sigmoid(log(a_0 / b_0) + 0.5 - (
-	lambda * sigma * sqrt(2.0 / PI) * exp(-pow(mu/sigma, 2.0) * 0.5) +
+	lambda * sigma * sqrt(2.0 / M_PI) * exp(-pow(mu/sigma, 2.0) * 0.5) +
 	lambda * mu * (1.0 - 2.0 * R::pnorm(- mu/sigma, 0, 1, 1, 0)) +
-	log(sqrt(2.0 / PI) * 1.0 /(sigma * lambda)) + t)
+	log(sqrt(2.0 / M_PI) * 1.0 /(sigma * lambda)) + t)
     );
     
     return res;
