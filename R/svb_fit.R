@@ -33,7 +33,7 @@
 #' family \eqn{\mu}.}
 #' \item{s}{Final value for the standard deviation of the Gaussian component of 
 #' the variational family \eqn{s}.}
-#' \item{g}{Final value for the inclusion probability (\eqn{\gamma}.}
+#' \item{g}{Final value for the inclusion probability (\eqn{\gamma}).}
 #' \item{lambda}{Value of lambda used.}
 #' \item{a0}{Value of \eqn{\alpha_0} used.}
 #' \item{b0}{Value of \eqn{\beta_0} used.}
