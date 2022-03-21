@@ -112,6 +112,10 @@ svb.fit <- function(Y, delta, X, lambda=1, a0=1, b0=ncol(X),
     if (!(lambda > 0)) stop("'lambda' must be greater than 0")
     
     p <- ncol(X)
+    if (center) {
+	X <- scale(X, center=T, scale=F)
+    }
+
     if (is.null(mu.init)) {
 	y <- survival::Surv(as.matrix(Y), as.matrix(as.numeric(delta)))
 	g <- glmnet::glmnet(X, y, family="cox", nlambda=10, alpha=alpha,
@@ -127,10 +131,6 @@ svb.fit <- function(Y, delta, X, lambda=1, a0=1, b0=ncol(X),
     Y <- Y[oY]
     delta <- delta[oY]
     X <- X[oY, ]
-
-    if (center) {
-	X <- scale(X, center=T, scale=F)
-    }
 
     # fit the model
     res <- fit_partial(Y, delta, X, lambda, a0, b0,
